@@ -11,18 +11,19 @@ const ContainerWrapper = styled.div`
 `
 const SvgWrapper = styled.svg`
   width: 100%;
-  height: 900px;
+  height: 1000px;
 `
 const Hill = styled.path`
   fill:#f2f2f2
 `
 const TapPath = styled.path`
   stroke: rgba(0,0,0,0);
-  stroke-width: 30;
+  stroke-width: 20;
   fill: none;
   transition: stroke 200ms ease-out;
   &:hover {
-    stroke: red;
+    stroke: #6FCF97;
+    cursor: pointer;
   }
 `
 const MainPath = styled.path`
@@ -36,7 +37,8 @@ class Container extends Component {
     mouse: {
       x: 0,
       y: 0,
-    }
+    },
+    tapPathActive: false
   }
 
   pathRef = React.createRef<SVGPathElement>();
@@ -55,15 +57,29 @@ class Container extends Component {
       this.setState({mouse: {x: e.x, y: e.y}})
     });
   }
+
+  mouseOverTapPath = (e: React.MouseEvent) => {
+    this.setState({tapPathActive: true })
+  }
+
+  mouseOutTapPath = (e: React.MouseEvent) => {
+    this.setState({tapPathActive: false })
+  }
+
+
   render() {
     return (
       <ContainerWrapper>
         <SvgWrapper
-          viewBox="0 0 1440 600"
+          viewBox="0 0 1440 900"
         >
         <Hill d={hillPathData} />
-        <TapPath d={TapPathData} />
-        <MainPath d={TapPathData} ref={this.pathRef}/>
+        <TapPath d={TapPathData} 
+        onMouseOver={this.mouseOverTapPath}
+        onMouseOut={this.mouseOutTapPath}
+        
+        />
+        <MainPath d={TapPathData} ref={this.pathRef} />
         </SvgWrapper>
       </ContainerWrapper>
     );
