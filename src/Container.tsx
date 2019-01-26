@@ -17,23 +17,16 @@ const SvgWrapper = styled.svg`
   width: 100%;
   height: 100%;
   background-color: #fff;
-
-  @media (max-width: 700px) {
-  }
-
-  @media (max-width: 1100px) {
-  }
 `;
 const Hill = styled.path`
   fill: #f2f2f2;
 `;
 const TapPath = styled.path`
   stroke: rgba(0, 0, 0, 0);
-  stroke-width: 1.5 ;
+  stroke-width: 3;
   fill: none;
-  transition: stroke 70ms ease-out 50ms;
+  transition: stroke 70ms ease-out;
   &:hover {
-    stroke: #6fcf97;
     cursor: pointer;
   }
 `;
@@ -43,6 +36,13 @@ const MainPath = styled.path`
 `;
 
 const Background = styled.rect``
+
+const GhostCircle = styled.circle`
+  opacity: ${props => props.theme.active ? 1: 0
+};
+fill: #6fcf97;
+transition: opacity 70ms ease-out ;
+`
 
 class Container extends Component {
   state = {
@@ -87,7 +87,8 @@ class Container extends Component {
           point = tryPoint;
         }
       }
-      console.log(this.pointOnCrv(e.x/ window.innerWidth))
+      
+      //call pointOnCrv function
       const pt = (this.pointOnCrv(e.x/ window.innerWidth))
 
       //confirm point is not undefined, if
@@ -117,7 +118,7 @@ class Container extends Component {
     this.setState({ tapPathActive: false });
   };
 
-  pointOnCrv(pct: number) {
+  pointOnCrv(pct: number): {x: number, y: number} {
     const defRef = this.pathRef.current
     let length: number
     let containerWidth: number
@@ -139,28 +140,27 @@ class Container extends Component {
   render() {
     return (
       <ContainerWrapper>
-        <SvgWrapper width="100%" height="60" viewBox={`0 0 100 60`} fill="none">
+        <SvgWrapper width="100%" height="60" viewBox={`0 0 100 60`}     fill="none">
           >
           <Background width="100" height="60" fill="#2D9CDB" />
           <Hill
             d="M50 20C25 20 24.8264 46 0 46V60H100V46C75.1736 46 75 20 50 20Z"
             fill="#F2F2F2"
           />
-          <circle 
+          <GhostCircle 
             cx={this.state.mousePoseOnLine.x} 
             cy={this.state.mousePoseOnLine.y} 
-            r={2} 
-            fill={"#6fcf97"}
+            r={2}
+            theme={{active: this.state.tapPathActive}}
           />
           <MainPath
             d="M0 46C24.8264 46 25 20 50 20C75 20 75.1736 46 100 46"
-            stroke="black"
             fill="none"
             strokeWidth="0.694444"
+            ref={this.pathRef}
           />
           <TapPath
             d="M0 46C24.8264 46 25 20 50 20C75 20 75.1736 46 100 46"
-            ref={this.pathRef}
             onMouseOver={this.mouseOverTapPath}
             onMouseOut={this.mouseOutTapPath}
           />

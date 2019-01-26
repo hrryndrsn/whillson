@@ -1,6 +1,6 @@
 ## to do
 
-figure out how to get the graph responsive
-
-figure out why the cirlce on line does not work 
-
+- clean up paths 
+- display ghost circle dynamically with tap path
+- increase tap path with 
+- add point to state logic
