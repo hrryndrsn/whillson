@@ -2,7 +2,7 @@ import React from 'react';
 import styled from "styled-components";
 
 const Circle = styled.circle`
-
+  fill: red;
 `
 
 export interface PointProps {
@@ -24,7 +24,7 @@ export default class Point extends React.Component<PointProps, any> {
 
   public render() {
     return (
-      <circle 
+      <Circle
         key={this.props.key} 
         id={String(this.props.key)}
         cx={this.props.x} 
