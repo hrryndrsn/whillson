@@ -19,7 +19,6 @@ const SvgWrapper = styled.svg`
   background-color: #fff;
 
   @media (max-width: 700px) {
-    margin-top: 20vh;
   }
 
   @media (max-width: 1100px) {
@@ -30,9 +29,9 @@ const Hill = styled.path`
 `;
 const TapPath = styled.path`
   stroke: rgba(0, 0, 0, 0);
-  stroke-width: 1 ;
+  stroke-width: 1.5 ;
   fill: none;
-  transition: stroke 200ms ease-out 50ms;
+  transition: stroke 70ms ease-out 50ms;
   &:hover {
     stroke: #6fcf97;
     cursor: pointer;
@@ -88,12 +87,18 @@ class Container extends Component {
           point = tryPoint;
         }
       }
+      console.log(this.pointOnCrv(e.x/ window.innerWidth))
+      const pt = (this.pointOnCrv(e.x/ window.innerWidth))
 
-      let derp = point ? point : { x: 0, y: 0 };
+      //confirm point is not undefined, if
+      let defPoint = point ? point : { x: 0, y: 0 };
       this.setState({
         mouse: { x: e.x, y: e.y },
         mouseXPercent: e.x / window.innerWidth,
-        mousePoseOnLine: { x: derp.x ? derp.x : 0 }
+        mousePoseOnLine: { 
+          x: pt.x,
+          y: pt.y
+        }
       });
     });
   };
@@ -112,6 +117,25 @@ class Container extends Component {
     this.setState({ tapPathActive: false });
   };
 
+  pointOnCrv(pct: number) {
+    const defRef = this.pathRef.current
+    let length: number
+    let containerWidth: number
+    let relPct: number
+    let crds: {x: number, y: number}
+    if (defRef) {
+      length= defRef.getTotalLength();
+      relPct = length * pct;
+      containerWidth = window.innerWidth
+      crds = defRef.getPointAtLength(relPct);
+      return crds;
+    } else {
+      console.log("ref not defined")
+      crds = {x: 0, y:0}
+      return crds
+    }
+  }
+
   render() {
     return (
       <ContainerWrapper>
@@ -122,27 +146,24 @@ class Container extends Component {
             d="M50 20C25 20 24.8264 46 0 46V60H100V46C75.1736 46 75 20 50 20Z"
             fill="#F2F2F2"
           />
-          <TapPath
-            d="M0 46C24.8264 46 25 20 50 20C75 20 75.1736 46 100 46"
-            ref={this.pathRef}
-            onMouseOver={this.mouseOverTapPath}
-            onMouseOut={this.mouseOutTapPath}
+          <circle 
+            cx={this.state.mousePoseOnLine.x} 
+            cy={this.state.mousePoseOnLine.y} 
+            r={2} 
+            fill={"#6fcf97"}
           />
           <MainPath
             d="M0 46C24.8264 46 25 20 50 20C75 20 75.1736 46 100 46"
             stroke="black"
             fill="none"
             strokeWidth="0.694444"
-            ref={this.pathRef}
           />
-          {/* <line
-              x1={100 * this.state.mouseXPercent}
-              x2={100 * this.state.mouseXPercent}
-              y1={0}
-              y2={50}
-              stroke={"red"}
-              strokeWidth={0.1}
-            /> */}
+          <TapPath
+            d="M0 46C24.8264 46 25 20 50 20C75 20 75.1736 46 100 46"
+            ref={this.pathRef}
+            onMouseOver={this.mouseOverTapPath}
+            onMouseOut={this.mouseOutTapPath}
+          />
         </SvgWrapper>
       </ContainerWrapper>
     );
