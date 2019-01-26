@@ -57,6 +57,8 @@ interface ContainerState {
   mouseXPercent: number;
   tapPathActive: boolean;
   points: Pt[];
+  isDragging: boolean;
+  activePoint: number;
 }
 
 class Container extends Component<{}, ContainerState> {
@@ -71,7 +73,9 @@ class Container extends Component<{}, ContainerState> {
     },
     mouseXPercent: 0,
     tapPathActive: false,
-    points: []
+    points: [],
+    isDragging: false,
+    activePoint: -1
   };
 
   pathRef = React.createRef<SVGPathElement>();
@@ -98,6 +102,16 @@ class Container extends Component<{}, ContainerState> {
       }
       //call pointOnCrv function
       const pt = this.pointOnCrv(e.x / window.innerWidth);
+
+      if (this.state.isDragging) {
+        let id = this.state.activePoint
+        let pointsList: Pt[] = this.state.points 
+        pointsList[id] = {x: pt.x, y: pt.y}
+
+        this.setState({
+          points: pointsList
+        })
+      }
 
       this.setState({
         mouse: { x: e.x, y: e.y },
@@ -153,19 +167,41 @@ class Container extends Component<{}, ContainerState> {
     }
   }
 
+  handleMouseDown = (e: any) => {
+    let newId: number;
+    console.log("element ->", e.target)
+    if (e.target.id) {
+      newId = parseInt(e.target.id)
+      console.log(newId)
+      this.setState({isDragging: true, activePoint: newId})
+    } else {
+      //no id
+      return
+    }
+  }
+
+  handleMouseUp = (e: any) => {
+    this.setState({isDragging: false, activePoint: -1})
+  }
+
   renderPoint = (point: Pt, index: number) => {
     return (
       <Point 
         key={index} 
+        id={index}
         x={point.x} 
         y={point.y} 
+        isDragging={index == this.state.activePoint}
       />
     );
   };
 
   render() {
     return (
-      <ContainerWrapper>
+      <ContainerWrapper 
+      onMouseDown={this.handleMouseDown} 
+      onMouseUp={this.handleMouseUp}
+      >
         <SvgWrapper width="100%" height="60" viewBox={`0 0 100 60`} fill="none">
           >
           <Background width="100" height="60" fill="#2D9CDB" />
@@ -183,13 +219,13 @@ class Container extends Component<{}, ContainerState> {
             d="M0 46C24.8264 46 25 20 50 20C75 20 75.1736 46 100 46"
             fill="none"
             strokeWidth="0.694444"
-            ref={this.pathRef}
           />
           <TapPath
             d="M0 46C24.8264 46 25 20 50 20C75 20 75.1736 46 100 46"
             onMouseOver={this.mouseOverTapPath}
             onMouseOut={this.mouseOutTapPath}
             onClick={this.handleClick}
+            ref={this.pathRef}
           />
           {this.state.points.map((point: Pt, index) => {
             return this.renderPoint(point, index);
