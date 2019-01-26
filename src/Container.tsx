@@ -87,8 +87,8 @@ class Container extends Component<{}, ContainerState> {
     });
 
     window.addEventListener("mousemove", (e: MouseEvent) => {
-      const xPct = e.x / window.innerWidth;
-      const path = this.pathRef.current;
+      const xPct = e.x / window.innerWidth,
+            path = this.pathRef.current;
       let point;
       if (path) {
         let tryPoint = path.getPointAtLength(xPct);
@@ -99,8 +99,6 @@ class Container extends Component<{}, ContainerState> {
       //call pointOnCrv function
       const pt = this.pointOnCrv(e.x / window.innerWidth);
 
-      //confirm point is not undefined, if
-      let defPoint = point ? point : { x: 0, y: 0 };
       this.setState({
         mouse: { x: e.x, y: e.y },
         mouseXPercent: e.x / window.innerWidth,
@@ -128,11 +126,11 @@ class Container extends Component<{}, ContainerState> {
 
   handleClick = (e: React.MouseEvent) => {
     const newPoint = this.pointOnCrv(e.pageX / window.innerWidth);
-    console.log(newPoint);
-    console.log(e.pageX / window.innerWidth);
+    
+    //add point
     this.setState({
-      points: [...this.state.points, { x: newPoint.x, y: newPoint.y }]
-    });
+        points: [...this.state.points, { x: newPoint.x, y: newPoint.y }]
+      });
   };
 
   pointOnCrv(pct: number): { x: number; y: number } {
@@ -156,7 +154,13 @@ class Container extends Component<{}, ContainerState> {
   }
 
   renderPoint = (point: Pt, index: number) => {
-    return <circle key={index} cx={point.x} cy={point.y} r={2} fill={"#333"} />;
+    return (
+      <Point 
+        key={index} 
+        x={point.x} 
+        y={point.y} 
+      />
+    );
   };
 
   render() {

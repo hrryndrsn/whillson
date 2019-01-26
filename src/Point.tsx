@@ -6,23 +6,32 @@ const Circle = styled.circle`
 `
 
 export interface PointProps {
+  key: number,
   x: number,
   y: number
 }
 
 
 
-export default class Point extends React.PureComponent<PointProps, any> {
+export default class Point extends React.Component<PointProps, any> {
   componentDidMount = () => {
     console.log(this.props)
   }
+
+  handlePointClick = (e: React.MouseEvent) => {
+    console.log(e.target)
+  } 
+
   public render() {
     return (
-      <Circle 
+      <circle 
+        key={this.props.key} 
+        id={String(this.props.key)}
         cx={this.props.x} 
         cy={this.props.y} 
-        r={2}
-        fill={"black"}
+        r={2} 
+        fill={"#333"} 
+        onClick={this.handlePointClick}
       />
     );
   }
