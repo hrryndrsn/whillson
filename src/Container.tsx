@@ -1,6 +1,11 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { hillPathData, TapPathData } from "./paths";
+import {
+  hillPathData,
+  TapPathData,
+  hillPathData2,
+  TapPathData2
+} from "./paths";
 
 import "./App.css";
 
@@ -10,9 +15,14 @@ const ContainerWrapper = styled.div`
 `;
 const SvgWrapper = styled.svg`
   width: 100%;
+  height: 100%;
   background-color: #fff;
-  @media (max-width: 500px) {
-      margin-top: 20vh;
+
+  @media (max-width: 700px) {
+    margin-top: 20vh;
+  }
+
+  @media (max-width: 1100px) {
   }
 `;
 const Hill = styled.path`
@@ -20,7 +30,7 @@ const Hill = styled.path`
 `;
 const TapPath = styled.path`
   stroke: rgba(0, 0, 0, 0);
-  stroke-width: 20;
+  stroke-width: 1 ;
   fill: none;
   transition: stroke 200ms ease-out 50ms;
   &:hover {
@@ -32,6 +42,8 @@ const MainPath = styled.path`
   stroke: none;
   fill: none;
 `;
+
+const Background = styled.rect``
 
 class Container extends Component {
   state = {
@@ -67,24 +79,21 @@ class Container extends Component {
     });
 
     window.addEventListener("mousemove", (e: MouseEvent) => {
-      // console.log(e.x/window.innerWidth)
-      // console.log(this.pathRef.current)
-      const xPct = e.x/window.innerWidth
-      const path = this.pathRef.current
+      const xPct = e.x / window.innerWidth;
+      const path = this.pathRef.current;
       let point;
       if (path) {
-        let tryPoint = path.getPointAtLength(xPct)
+        let tryPoint = path.getPointAtLength(xPct);
         if (tryPoint !== undefined) {
-          point = tryPoint
+          point = tryPoint;
         }
-        console.log(point)
       }
 
-      let derp = point ? point : {x: 0, y: 0}
-      this.setState({ 
-        mouse: { x: e.x, y: e.y }, 
+      let derp = point ? point : { x: 0, y: 0 };
+      this.setState({
+        mouse: { x: e.x, y: e.y },
         mouseXPercent: e.x / window.innerWidth,
-        mousePoseOnLine: {x: derp.x ? derp.x : 0, }
+        mousePoseOnLine: { x: derp.x ? derp.x : 0 }
       });
     });
   };
@@ -106,39 +115,38 @@ class Container extends Component {
   render() {
     return (
       <ContainerWrapper>
-        <SvgWrapper 
-                    width="100%"
-          viewBox={`0 0 1440 700`}
-          
-        >
-          <Hill d={hillPathData} />
+        <SvgWrapper width="100%" height="60" viewBox={`0 0 100 60`} fill="none">
+          >
+          <Background width="100" height="60" fill="#2D9CDB" />
+          <Hill
+            d="M50 20C25 20 24.8264 46 0 46V60H100V46C75.1736 46 75 20 50 20Z"
+            fill="#F2F2F2"
+          />
           <TapPath
-            d={TapPathData}
+            d="M0 46C24.8264 46 25 20 50 20C75 20 75.1736 46 100 46"
+            ref={this.pathRef}
             onMouseOver={this.mouseOverTapPath}
             onMouseOut={this.mouseOutTapPath}
-          /> 
-          <MainPath d={TapPathData} ref={this.pathRef} />
-          <circle
-            cx={this.state.mousePoseOnLine.x}
-            cy={this.state.mousePoseOnLine.y}
-            r={25}
-            fill={"black"}
           />
-        </SvgWrapper>        
+          <MainPath
+            d="M0 46C24.8264 46 25 20 50 20C75 20 75.1736 46 100 46"
+            stroke="black"
+            fill="none"
+            strokeWidth="0.694444"
+            ref={this.pathRef}
+          />
+          {/* <line
+              x1={100 * this.state.mouseXPercent}
+              x2={100 * this.state.mouseXPercent}
+              y1={0}
+              y2={50}
+              stroke={"red"}
+              strokeWidth={0.1}
+            /> */}
+        </SvgWrapper>
       </ContainerWrapper>
     );
   }
 }
 
 export default Container;
-
-// {
-//   this.state.points.map( point => {
-//     <circle
-//     cx={point.x}
-//     cy={point.y}
-//     r={25}
-//     fill={"black"}
-//   />
-//   })
-// }
