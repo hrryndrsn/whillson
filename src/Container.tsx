@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import Point from "./Point";
+import FloatingBox from "./FloatingBox";
 
 import {} from "./paths";
 
@@ -248,6 +249,11 @@ class Container extends Component<{}, ContainerState> {
             return this.renderPoint(point, index);
           })}
         </SvgWrapper>
+          {(this.state.selectedPoint > -1) && 
+        
+         <FloatingBox activePoint={this.state.points[this.state.selectedPoint]}/>
+        }
+
       </ContainerWrapper>
     );
   }
