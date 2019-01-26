@@ -2,7 +2,13 @@ import React from 'react';
 import styled from "styled-components";
 
 const Circle = styled.circle`
-  fill: red;
+  fill: #333;
+  r: 2;
+  transition: r 75ms ease-in-out;
+  &:hover {
+    fill: blue;
+    r: 2.5;
+  }
 `
 
 export interface PointProps {
@@ -10,8 +16,6 @@ export interface PointProps {
   x: number,
   y: number
 }
-
-
 
 export default class Point extends React.Component<PointProps, any> {
   componentDidMount = () => {
@@ -30,7 +34,6 @@ export default class Point extends React.Component<PointProps, any> {
         cx={this.props.x} 
         cy={this.props.y} 
         r={2} 
-        fill={"#333"} 
         onClick={this.handlePointClick}
       />
     );
