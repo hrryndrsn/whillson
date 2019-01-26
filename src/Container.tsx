@@ -40,9 +40,13 @@ const GhostCircle = styled.circle`
   transition: opacity 100ms ease-in-out;
 `;
 
+
+////-----------------------------------------------------
+
 interface Pt {
   x: number;
   y: number;
+  tag: string;
 }
 
 interface ContainerState {
@@ -61,6 +65,8 @@ interface ContainerState {
   draggedPoint: number;
   selectedPoint: number;
 }
+
+/////---------------------------------------------------------
 
 class Container extends Component<{}, ContainerState> {
   state = {
@@ -108,7 +114,7 @@ class Container extends Component<{}, ContainerState> {
       if (this.state.isDragging) {
         let id = this.state.draggedPoint
         let pointsList: Pt[] = this.state.points 
-        pointsList[id] = {x: pt.x, y: pt.y}
+        pointsList[id] = {x: pt.x, y: pt.y, tag: "New point"}
 
         this.setState({
           points: pointsList
@@ -149,7 +155,7 @@ class Container extends Component<{}, ContainerState> {
     const ptId = this.state.points.length
     //add point
     this.setState({
-        points: [...this.state.points, { x: newPoint.x, y: newPoint.y }],
+        points: [...this.state.points, { x: newPoint.x, y: newPoint.y, tag: "newPoint"}],
         selectedPoint: ptId
       });
     
@@ -202,6 +208,7 @@ class Container extends Component<{}, ContainerState> {
         isDragging={index == this.state.draggedPoint}
         isSelected={index == this.state.selectedPoint}
         handleSelectPoint={this.handleSelectPoint}
+        tag={"New point"}
       />
     );
   };
