@@ -1,11 +1,8 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import {
-  hillPathData,
-  TapPathData,
-  hillPathData2,
-  TapPathData2
-} from "./paths";
+import Point from "./Point";
+
+import {} from "./paths";
 
 import "./App.css";
 
@@ -35,16 +32,34 @@ const MainPath = styled.path`
   fill: none;
 `;
 
-const Background = styled.rect``
+const Background = styled.rect``;
 
 const GhostCircle = styled.circle`
-  opacity: ${props => props.theme.active ? 1: 0
-};
-fill: #6fcf97;
-transition: opacity 70ms ease-out ;
-`
+  opacity: ${props => (props.theme.active ? 1 : 0)};
+  fill: #6fcf97;
+  transition: opacity 50ms ease-in;
+`;
 
-class Container extends Component {
+interface Pt {
+  x: number;
+  y: number;
+}
+
+interface ContainerState {
+  mouse: {
+    x: number;
+    y: number;
+  };
+  mousePoseOnLine: {
+    x: number;
+    y: number;
+  };
+  mouseXPercent: number;
+  tapPathActive: boolean;
+  points: Pt[];
+}
+
+class Container extends Component<{}, ContainerState> {
   state = {
     mouse: {
       x: 0,
@@ -56,13 +71,7 @@ class Container extends Component {
     },
     mouseXPercent: 0,
     tapPathActive: false,
-    points: [
-      {
-        x: 719.9999389648438,
-        y: 300,
-        color: "blue"
-      }
-    ]
+    points: []
   };
 
   pathRef = React.createRef<SVGPathElement>();
@@ -87,16 +96,15 @@ class Container extends Component {
           point = tryPoint;
         }
       }
-      
       //call pointOnCrv function
-      const pt = (this.pointOnCrv(e.x/ window.innerWidth))
+      const pt = this.pointOnCrv(e.x / window.innerWidth);
 
       //confirm point is not undefined, if
       let defPoint = point ? point : { x: 0, y: 0 };
       this.setState({
         mouse: { x: e.x, y: e.y },
         mouseXPercent: e.x / window.innerWidth,
-        mousePoseOnLine: { 
+        mousePoseOnLine: {
           x: pt.x,
           y: pt.y
         }
@@ -118,40 +126,54 @@ class Container extends Component {
     this.setState({ tapPathActive: false });
   };
 
-  pointOnCrv(pct: number): {x: number, y: number} {
-    const defRef = this.pathRef.current
-    let length: number
-    let containerWidth: number
-    let relPct: number
-    let crds: {x: number, y: number}
+  handleClick = (e: React.MouseEvent) => {
+    const newPoint = this.pointOnCrv(e.pageX / window.innerWidth);
+    console.log(newPoint);
+    console.log(e.pageX / window.innerWidth);
+    this.setState({
+      points: [...this.state.points, { x: newPoint.x, y: newPoint.y }]
+    });
+  };
+
+  pointOnCrv(pct: number): { x: number; y: number } {
+    const defRef = this.pathRef.current;
+    let length: number,
+      containerWidth: number,
+      relPct: number,
+      crds: { x: number; y: number };
+
     if (defRef) {
-      length= defRef.getTotalLength();
+      length = defRef.getTotalLength();
       relPct = length * pct;
-      containerWidth = window.innerWidth
+      containerWidth = window.innerWidth;
       crds = defRef.getPointAtLength(relPct);
       return crds;
     } else {
-      console.log("ref not defined")
-      crds = {x: 0, y:0}
-      return crds
+      console.log("ref not defined");
+      crds = { x: 0, y: 0 };
+      return crds;
     }
   }
+
+  renderPoint = (point: Pt, index: number) => {
+    return <circle key={index} cx={point.x} cy={point.y} r={2} fill={"#333"} />;
+  };
 
   render() {
     return (
       <ContainerWrapper>
-        <SvgWrapper width="100%" height="60" viewBox={`0 0 100 60`}     fill="none">
+        <SvgWrapper width="100%" height="60" viewBox={`0 0 100 60`} fill="none">
           >
           <Background width="100" height="60" fill="#2D9CDB" />
           <Hill
             d="M50 20C25 20 24.8264 46 0 46V60H100V46C75.1736 46 75 20 50 20Z"
             fill="#F2F2F2"
           />
-          <GhostCircle 
-            cx={this.state.mousePoseOnLine.x} 
-            cy={this.state.mousePoseOnLine.y} 
+          <GhostCircle
+            cx={this.state.mousePoseOnLine.x}
+            cy={this.state.mousePoseOnLine.y}
             r={2}
-            theme={{active: this.state.tapPathActive}}
+            theme={{ active: this.state.tapPathActive }}
           />
           <MainPath
             d="M0 46C24.8264 46 25 20 50 20C75 20 75.1736 46 100 46"
@@ -163,7 +185,11 @@ class Container extends Component {
             d="M0 46C24.8264 46 25 20 50 20C75 20 75.1736 46 100 46"
             onMouseOver={this.mouseOverTapPath}
             onMouseOut={this.mouseOutTapPath}
+            onClick={this.handleClick}
           />
+          {this.state.points.map((point: Pt, index) => {
+            return this.renderPoint(point, index);
+          })}
         </SvgWrapper>
       </ContainerWrapper>
     );
