@@ -33,7 +33,8 @@ const MainPath = styled.path`
   fill: none;
 `;
 
-const Background = styled.rect``;
+const Background = styled.rect`
+`;
 
 const GhostCircle = styled.circle`
   opacity: ${props => (props.theme.active ? 1 : 0)};
@@ -70,7 +71,7 @@ interface ContainerState {
 /////---------------------------------------------------------
 
 class Container extends Component<{}, ContainerState> {
-  state = {
+  state: ContainerState = {
     mouse: {
       x: 0,
       y: 0
@@ -113,13 +114,16 @@ class Container extends Component<{}, ContainerState> {
       const pt = this.pointOnCrv(e.x / window.innerWidth);
 
       if (this.state.isDragging) {
-        let id = this.state.draggedPoint
-        let pointsList: Pt[] = this.state.points 
-        pointsList[id] = {x: pt.x, y: pt.y, tag: "New point"}
-
-        this.setState({
-          points: pointsList
-        })
+        if (this.state.selectedPoint !== -1) {
+          let id = this.state.selectedPoint
+          let pointsList: Pt[] = this.state.points 
+          pointsList[id].x = pt.x
+          pointsList[id].y = pt.y
+  
+          this.setState({
+            points: pointsList
+          })
+        } 
       }
 
       this.setState({
@@ -156,7 +160,7 @@ class Container extends Component<{}, ContainerState> {
     const ptId = this.state.points.length
     //add point
     this.setState({
-        points: [...this.state.points, { x: newPoint.x, y: newPoint.y, tag: "newPoint"}],
+        points: [...this.state.points, { x: newPoint.x, y: newPoint.y, tag: "New point"}],
         selectedPoint: ptId
       });
     
@@ -184,8 +188,15 @@ class Container extends Component<{}, ContainerState> {
 
   //mouse down on contianer 
   handleMouseDown = (e: any) => {
+    console.log(e.target.id)
     let newId: number;
     if (e.target.id) {
+      if (e.target.id === "inputField" 
+          || e.target.id === "floatingBoxContainer"
+          || e.target.id === "formWrapper"
+        ) {
+        return
+      }
       newId = parseInt(e.target.id)
       this.setState({isDragging: true, draggedPoint: newId, selectedPoint: newId})
     } else {
@@ -199,20 +210,22 @@ class Container extends Component<{}, ContainerState> {
     this.setState({isDragging: false, draggedPoint: -1})
   }
 
-  renderPoint = (point: Pt, index: number) => {
-    return (
-      <Point 
-        key={index} 
-        id={index}
-        x={point.x} 
-        y={point.y} 
-        isDragging={index == this.state.draggedPoint}
-        isSelected={index == this.state.selectedPoint}
-        handleSelectPoint={this.handleSelectPoint}
-        tag={"New point"}
-      />
-    );
-  };
+  handleDeselect = (e: any) => {
+    this.setState({selectedPoint: -1})
+  }
+
+  handleTagChange = (e: React.FormEvent<HTMLInputElement>) => {
+    console.log("change->",e.currentTarget.value)
+    if (this.state.selectedPoint > -1) {
+      let ptList: Pt[] = this.state.points.slice();
+      ptList[this.state.selectedPoint].tag = e.currentTarget.value
+      console.log(ptList)
+      this.setState({
+        points: ptList
+      })
+    } else
+    return
+  }
 
   render() {
     return (
@@ -222,10 +235,11 @@ class Container extends Component<{}, ContainerState> {
       >
         <SvgWrapper width="100%" height="60" viewBox={`0 0 100 60`} fill="none">
           >
-          <Background width="100" height="60" fill="#2D9CDB" />
+          <Background onClick={this.handleDeselect} width="100" height="60" fill="#2D9CDB" />
           <Hill
             d="M50 20C25 20 24.8264 46 0 46V60H100V46C75.1736 46 75 20 50 20Z"
             fill="#F2F2F2"
+            onClick={this.handleDeselect}
           />
           <GhostCircle
             cx={this.state.mousePoseOnLine.x}
@@ -246,12 +260,27 @@ class Container extends Component<{}, ContainerState> {
             ref={this.pathRef}
           />
           {this.state.points.map((point: Pt, index) => {
-            return this.renderPoint(point, index);
+            return (
+              <Point 
+                key={index} 
+                id={index}
+                x={point.x} 
+                y={point.y} 
+                isDragging={index == this.state.draggedPoint}
+                isSelected={index == this.state.selectedPoint}
+                handleSelectPoint={this.handleSelectPoint}
+                tag={point.tag}
+              />
+            )
           })}
         </SvgWrapper>
           {(this.state.selectedPoint > -1) && 
         
-         <FloatingBox activePoint={this.state.points[this.state.selectedPoint]}/>
+         <FloatingBox 
+            activePoint={this.state.points[this.state.selectedPoint]}
+            handleTagChange={this.handleTagChange}
+            id={999}
+         />
         }
 
       </ContainerWrapper>

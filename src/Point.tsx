@@ -45,6 +45,9 @@ export default class Point extends React.Component<PointProps, any> {
   componentDidMount = () => {
     // console.log(this.props)
   };
+  componentDidUpdate = () => {
+    // console.log(this.props)
+  }
 
   handlePointClick = (e: any) => {
     const pId = parseInt(e.target.id);
