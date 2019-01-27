@@ -27,7 +27,6 @@ const Tag = styled.text`
   fill: #fff;
   user-select: none;
   font-size: 2px;
-  transform: translate(-5px, -5px);
   font-family: sans-serif;
 `;
 
@@ -42,11 +41,27 @@ export interface PointProps {
 }
 
 export default class Point extends React.Component<PointProps, any> {
+  tagRef = React.createRef<SVGTextElement>();
+
+  state = {
+    textBoxWidth: 0
+  }
+
   componentDidMount = () => {
     // console.log(this.props)
+    if (this.tagRef.current) {
+      console.log(this.tagRef.current.getBBox().width)
+      this.setState({textBoxWidth: this.tagRef.current.getBBox().width})
+    }
+    
   };
   componentDidUpdate = () => {
     // console.log(this.props)
+    if (this.tagRef.current) {
+      if (this.state.textBoxWidth !== this.tagRef.current.getBBox().width){
+        this.setState({textBoxWidth: this.tagRef.current.getBBox().width})
+      }
+    }
   }
 
   handlePointClick = (e: any) => {
@@ -73,8 +88,9 @@ export default class Point extends React.Component<PointProps, any> {
           }}
         />
         <Tag 
-        x={this.props.x} 
-        y={this.props.y}
+        x={this.props.x - (this.state.textBoxWidth/2)} 
+        y={this.props.y - 5}
+        ref={this.tagRef}
         >
           {this.props.tag}
         </Tag>

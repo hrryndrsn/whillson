@@ -279,7 +279,6 @@ class Container extends Component<{}, ContainerState> {
          <FloatingBox 
             activePoint={this.state.points[this.state.selectedPoint]}
             handleTagChange={this.handleTagChange}
-            id={999}
          />
         }
 

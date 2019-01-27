@@ -1,6 +1,5 @@
 import * as React from 'react';
 import styled, { ThemeConsumer } from 'styled-components';
-import { number } from 'prop-types';
 
 
 
@@ -30,7 +29,6 @@ export interface FloatingBoxProps {
     x: number,
     y: number,
   },
-  id: number
   handleTagChange: (e: any) => void
 }
 
@@ -42,6 +40,10 @@ export default class FloatingBox extends React.Component<FloatingBoxProps, any> 
     screenPosY: (this.props.activePoint.y / 100) * window.innerHeight
   }
 
+  private handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+  }
+
    public render() {
     return (
       <FloatingBoxWrapper
@@ -50,6 +52,7 @@ export default class FloatingBox extends React.Component<FloatingBoxProps, any> 
       >
       <FormWrapper
         id="formWrapper"
+        onSubmit={this.handleSubmit}
       >
         <PointTagInput 
           type="text" 
