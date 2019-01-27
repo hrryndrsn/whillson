@@ -3,13 +3,8 @@ import styled from "styled-components";
 
 const Circle = styled.circle`
 
-  fill: ${props =>
-    props.theme.isDragging 
-      ? "blue" 
-      : props.theme.isSelected 
-      ? props.theme.color
-      : props.theme.color
-    };
+  fill: ${props => props.theme.color};
+  stroke: ${props => props.theme.isSelected ? "#fff" : "none"};
   r: ${props =>
     props.theme.isDragging 
       ? 2.5 
@@ -17,10 +12,10 @@ const Circle = styled.circle`
       ? 2.5 
       : 2
     };
+    
   transition: r 75ms ease-in-out, 
               fill 75ms ease-in-out;
   &:hover {
-    fill: ${props => (props.theme.isSelected ? props.theme.color : "blue")};
     r: 2.5;
   }
 `;
@@ -30,7 +25,7 @@ const Tag = styled.text`
   user-select: none;
   font-size: 2px;
   font-family: sans-serif;
-  background: #333
+  background: #333;
 `;
 
 export interface PointProps {

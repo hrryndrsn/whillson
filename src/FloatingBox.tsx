@@ -4,13 +4,12 @@ import styled, { ThemeConsumer } from 'styled-components';
 
 
 const FloatingBoxWrapper = styled.div`
-  position: fixed;
   display: grid;
   padding: 20px 20vw;
   left: 0;
   bottom: 0;
   width: 60%;
-  height: 20vh;
+  height: 35vh;
   background: white;
   font-size: 32px;
 `
@@ -27,6 +26,12 @@ const PointTagInput = styled.input`
     border-bottom: 1px rgba(0,0,0, 0.2) solid;
   }
   
+`
+
+const TagLabel = styled.label`
+  user-select: none;
+  font-size: 16px;
+  color: #bbb;
 `
 
 //---------------------------------------------------------------------------
@@ -62,6 +67,9 @@ export default class FloatingBox extends React.Component<FloatingBoxProps, any> 
         id="formWrapper"
         onSubmit={this.handleSubmit}
       >
+        <TagLabel>
+          name
+        </TagLabel>
         <PointTagInput 
           type="text" 
           id="inputField"
@@ -69,6 +77,18 @@ export default class FloatingBox extends React.Component<FloatingBoxProps, any> 
           value={this.props.activePoint.tag}
           onChange={this.props.handleTagChange}
         />
+        <div>
+          <div> 
+            {/* tag placement controls */}
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          <div>
+            {/* colors */}
+          </div>
+        </div>
       </FormWrapper>
       </FloatingBoxWrapper>
     );

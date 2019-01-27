@@ -22,11 +22,13 @@ const Hill = styled.path`
 `;
 const TapPath = styled.path`
   stroke: rgba(0, 0, 0, 0);
-  stroke-width: 3;
+  stroke-width: 1;
+  stroke: #ccc;
   fill: none;
   transition: stroke 70ms ease-out;
   &:hover {
     cursor: pointer;
+    stroke:#6fcf97
   }
 `;
 const MainPath = styled.path`
@@ -41,9 +43,15 @@ fill: #f2f2f2;
 const GhostCircle = styled.circle`
   opacity: ${props => (props.theme.active ? 1 : 0)};
   fill: #6fcf97;
+  r: ${props => (props.theme.active ? 1.5 : 0.5)};
   transition: opacity 100ms ease-in-out;
 `;
 
+const EmptyFloatingBox = styled.div`
+    width: 60%;
+    height: 40vh; 
+    background: white;
+`
 
 ////-----------------------------------------------------
 
@@ -236,17 +244,32 @@ class Container extends Component<{}, ContainerState> {
     return
   }
 
+  renderPointEditor = () => {
+    if (this.state.selectedPoint === -1) {
+      return (
+        <EmptyFloatingBox/>
+      )
+    } else {
+      return (
+        <FloatingBox 
+          activePoint={this.state.points[this.state.selectedPoint]}
+          handleTagChange={this.handleTagChange}
+        />
+      )
+    }
+  }
+
   render() {
     return (
       <ContainerWrapper 
         onMouseDown={this.handleMouseDown} 
         onMouseUp={this.handleMouseUp}
       >
-        <SvgWrapper width="100%" height="60" viewBox={`0 0 100 60`} fill="none">
+        <SvgWrapper width="100%" height="50%" viewBox={`0 0 100 50`} fill="none">
           >
-          <Background onClick={this.handleDeselect} width="100" height="60" fill="#2D9CDB" />
+          <Background onClick={this.handleDeselect} width="100" height="50" fill="#2D9CDB" />
           <Hill
-            d="M50 20C25 20 24.8264 46 0 46V60H100V46C75.1736 46 75 20 50 20Z"
+            d="M50 22C25 22 24.8264 48 0 48V52H100V48C75.1736 48 75 22 50 22Z"
             fill="#F2F2F2"
             onClick={this.handleDeselect}
           />
@@ -257,12 +280,12 @@ class Container extends Component<{}, ContainerState> {
             theme={{ active: this.state.tapPathActive }}
           />
           <MainPath
-            d="M0 46C24.8264 46 25 20 50 20C75 20 75.1736 46 100 46"
+            d="M0 48C24.8264 48 25 22 50 22C75 22 75.1736 48 100 48"
             fill="none"
             strokeWidth="0.694444"
           />
           <TapPath
-            d="M0 46C24.8264 46 25 20 50 20C75 20 75.1736 46 100 46"
+            d="M0 48C24.8264 48 25 22 50 22C75 22 75.1736 48 100 48"
             onMouseOver={this.mouseOverTapPath}
             onMouseOut={this.mouseOutTapPath}
             onClick={this.handleClick}
@@ -284,13 +307,8 @@ class Container extends Component<{}, ContainerState> {
             )
           })}
         </SvgWrapper>
-          {(this.state.selectedPoint > -1) && 
-        
-         <FloatingBox 
-            activePoint={this.state.points[this.state.selectedPoint]}
-            handleTagChange={this.handleTagChange}
-         />
-        }
+          
+        {this.renderPointEditor()}
 
       </ContainerWrapper>
     );
