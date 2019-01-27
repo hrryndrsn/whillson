@@ -6,19 +6,27 @@ import styled, { ThemeConsumer } from 'styled-components';
 const FloatingBoxWrapper = styled.div`
   position: fixed;
   display: grid;
-  padding: 0 20vw;
+  padding: 20px 20vw;
   left: 0;
   bottom: 0;
-  width: 100%;
+  width: 60%;
   height: 20vh;
-  background: rgba(0,0,0, 0.2);
+  background: white;
   font-size: 32px;
 `
 
-const FormWrapper = styled.form``
+const FormWrapper = styled.form`
+`
 const PointTagInput = styled.input`
-font-size: 32px;
-
+  font-size: 32px;
+  width: 100%;
+  background: none;
+  outline: none;
+  border:none;
+  &:focus {
+    border-bottom: 1px rgba(0,0,0, 0.2) solid;
+  }
+  
 `
 
 //---------------------------------------------------------------------------
@@ -57,6 +65,7 @@ export default class FloatingBox extends React.Component<FloatingBoxProps, any> 
         <PointTagInput 
           type="text" 
           id="inputField"
+          autoFocus={true}
           value={this.props.activePoint.tag}
           onChange={this.props.handleTagChange}
         />

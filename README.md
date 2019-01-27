@@ -1,6 +1,4 @@
 ## to do
 
-- add second tap path 
-- clean up paths 
-- add point reposition logic
-- add colors!
+- add color controls
+- add top/bottom name swith control

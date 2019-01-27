@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import Point from "./Point";
 import FloatingBox from "./FloatingBox";
+import {pointColors} from "./colors"
 
 import {} from "./paths";
 
@@ -9,7 +10,7 @@ import "./App.css";
 
 const ContainerWrapper = styled.div`
   margin: 0 auto;
-  background: white;
+  background: #fff;
 `;
 const SvgWrapper = styled.svg`
   width: 100%;
@@ -17,7 +18,7 @@ const SvgWrapper = styled.svg`
   background-color: #fff;
 `;
 const Hill = styled.path`
-  fill: #f2f2f2;
+  fill: white;
 `;
 const TapPath = styled.path`
   stroke: rgba(0, 0, 0, 0);
@@ -29,11 +30,12 @@ const TapPath = styled.path`
   }
 `;
 const MainPath = styled.path`
-  stroke: none;
+  stroke: 1px;
   fill: none;
 `;
 
 const Background = styled.rect`
+fill: #f2f2f2;
 `;
 
 const GhostCircle = styled.circle`
@@ -49,6 +51,7 @@ interface Pt {
   x: number;
   y: number;
   tag: string;
+  color: string;
 }
 
 interface ContainerState {
@@ -155,12 +158,17 @@ class Container extends Component<{}, ContainerState> {
     this.setState({selectedPoint: id})
   }
 
+  getRandomColor = () => {
+    var color = pointColors[Math.floor(Math.random()*pointColors.length)];
+    return color
+  }
+
   handleClick = (e: React.MouseEvent) => {
     const newPoint = this.pointOnCrv(e.pageX / window.innerWidth);
     const ptId = this.state.points.length
     //add point
     this.setState({
-        points: [...this.state.points, { x: newPoint.x, y: newPoint.y, tag: "New point"}],
+        points: [...this.state.points, { x: newPoint.x, y: newPoint.y, tag: "New point", color: this.getRandomColor()}],
         selectedPoint: ptId
       });
     
@@ -191,10 +199,11 @@ class Container extends Component<{}, ContainerState> {
     console.log(e.target.id)
     let newId: number;
     if (e.target.id) {
-      if (e.target.id === "inputField" 
+      if ( e.target.id === "inputField" 
           || e.target.id === "floatingBoxContainer"
           || e.target.id === "formWrapper"
         ) {
+        // mouse down over a 'secondary element'
         return
       }
       newId = parseInt(e.target.id)
@@ -270,6 +279,7 @@ class Container extends Component<{}, ContainerState> {
                 isSelected={index == this.state.selectedPoint}
                 handleSelectPoint={this.handleSelectPoint}
                 tag={point.tag}
+                color={point.color}
               />
             )
           })}

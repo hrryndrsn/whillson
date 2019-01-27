@@ -2,12 +2,13 @@ import React from "react";
 import styled from "styled-components";
 
 const Circle = styled.circle`
+
   fill: ${props =>
     props.theme.isDragging 
       ? "blue" 
       : props.theme.isSelected 
-      ? "red" 
-      : "#333"
+      ? props.theme.color
+      : props.theme.color
     };
   r: ${props =>
     props.theme.isDragging 
@@ -16,18 +17,20 @@ const Circle = styled.circle`
       ? 2.5 
       : 2
     };
-  transition: r 75ms ease-in-out, fill 75ms ease-in-out;
+  transition: r 75ms ease-in-out, 
+              fill 75ms ease-in-out;
   &:hover {
-    fill: ${props => (props.theme.isSelected ? "red" : "blue")};
+    fill: ${props => (props.theme.isSelected ? props.theme.color : "blue")};
     r: 2.5;
   }
 `;
 
 const Tag = styled.text`
-  fill: #fff;
+  fill: #000;
   user-select: none;
   font-size: 2px;
   font-family: sans-serif;
+  background: #333
 `;
 
 export interface PointProps {
@@ -38,6 +41,7 @@ export interface PointProps {
   isSelected: boolean;
   handleSelectPoint: (id: number) => void;
   tag: string;
+  color: string;
 }
 
 export default class Point extends React.Component<PointProps, any> {
@@ -48,7 +52,6 @@ export default class Point extends React.Component<PointProps, any> {
   }
 
   componentDidMount = () => {
-    // console.log(this.props)
     if (this.tagRef.current) {
       console.log(this.tagRef.current.getBBox().width)
       this.setState({textBoxWidth: this.tagRef.current.getBBox().width})
@@ -56,7 +59,6 @@ export default class Point extends React.Component<PointProps, any> {
     
   };
   componentDidUpdate = () => {
-    // console.log(this.props)
     if (this.tagRef.current) {
       if (this.state.textBoxWidth !== this.tagRef.current.getBBox().width){
         this.setState({textBoxWidth: this.tagRef.current.getBBox().width})
@@ -68,10 +70,7 @@ export default class Point extends React.Component<PointProps, any> {
     const pId = parseInt(e.target.id);
     this.props.handleSelectPoint(pId);
   };
-  handleMouseDown = (e: React.MouseEvent) => {
-    // return console.log("drag")
-  };
-
+  
   public render() {
     return (
       <g>
@@ -81,16 +80,16 @@ export default class Point extends React.Component<PointProps, any> {
           cy={this.props.y}
           r={2}
           onClick={this.handlePointClick}
-          onMouseDown={this.handleMouseDown}
           theme={{
             isDragging: this.props.isDragging,
-            isSelected: this.props.isSelected
+            isSelected: this.props.isSelected,
+            color: this.props.color
           }}
         />
         <Tag 
-        x={this.props.x - (this.state.textBoxWidth/2)} 
-        y={this.props.y - 5}
-        ref={this.tagRef}
+          x={this.props.x - (this.state.textBoxWidth/2)}
+          y={this.props.y - 5}
+          ref={this.tagRef}
         >
           {this.props.tag}
         </Tag>
