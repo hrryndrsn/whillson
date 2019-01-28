@@ -2,33 +2,42 @@ import React from "react";
 import styled from "styled-components";
 
 const Circle = styled.circle`
-  fill: ${props =>
-    props.theme.isDragging 
-      ? "blue" 
-      : props.theme.isSelected 
-      ? "red" 
-      : "#333"
-    };
+  stroke-width: ${props => props.theme.isSelected ? 1 : 0};
+  fill: ${props => props.theme.color};
+  stroke: ${props => props.theme.isSelected ? "#fff" : "none"};
   r: ${props =>
     props.theme.isDragging 
       ? 2.5 
       : props.theme.isSelected 
-      ? 2.5 
+      ? 3
       : 2
     };
-  transition: r 75ms ease-in-out, fill 75ms ease-in-out;
+  box-shadow: 0px 10px 0px #ccc;
+  transition: r 75ms ease-in-out, 
+              fill 75ms ease-in-out;
   &:hover {
-    fill: ${props => (props.theme.isSelected ? "red" : "blue")};
-    r: 2.5;
+    r: ${props => props.theme.isSelected ? 3 : 2.5};
+  }
+  @media(max-width: 500px) {
+    r: ${props =>
+    props.theme.isDragging 
+      ? 4.5 
+      : props.theme.isSelected 
+      ? 6
+      : 4
+    };
+    &:hover {
+    r: ${props => props.theme.isSelected ? 6 : 4.5};
+  }
   }
 `;
 
 const Tag = styled.text`
-  fill: #fff;
+  fill: #000;
   user-select: none;
   font-size: 2px;
-  transform: translate(-5px, -5px);
   font-family: sans-serif;
+  background: #333;
 `;
 
 export interface PointProps {
@@ -39,22 +48,76 @@ export interface PointProps {
   isSelected: boolean;
   handleSelectPoint: (id: number) => void;
   tag: string;
+  color: string;
+  tagPosition: number;
 }
 
 export default class Point extends React.Component<PointProps, any> {
+  tagRef = React.createRef<SVGTextElement>();
+
+  state = {
+    textBoxWidth: 0,
+  }
+
   componentDidMount = () => {
-    // console.log(this.props)
+    if (this.tagRef.current) {
+      console.log(this.tagRef.current.getBBox().width)
+      this.setState({textBoxWidth: this.tagRef.current.getBBox().width})
+    }
+    
   };
+  componentDidUpdate = () => {
+    if (this.tagRef.current) {
+      if (this.state.textBoxWidth !== this.tagRef.current.getBBox().width){
+        this.setState({textBoxWidth: this.tagRef.current.getBBox().width})
+      }
+    }
+  }
 
   handlePointClick = (e: any) => {
     const pId = parseInt(e.target.id);
     this.props.handleSelectPoint(pId);
   };
-  handleMouseDown = (e: React.MouseEvent) => {
-    // return console.log("drag")
-  };
 
+  renderXOffset = () => {
+    switch (this.props.tagPosition) {
+      case 0:
+        this.props.x - (this.state.textBoxWidth/2)
+        break;
+      case 1:
+        this.props.x - (this.state.textBoxWidth/2)
+        break;
+      case 2:
+        this.props.x - (this.state.textBoxWidth/2)
+        break;
+      case 4:
+        this.props.x - (this.state.textBoxWidth/2)
+        break;
+    }
+  }
+
+  
   public render() {
+    let  xOff 
+    let  yOff 
+
+    if (this.props.tagPosition == 0) {
+      //tag at top
+      xOff = this.props.x - (this.state.textBoxWidth/2)
+      yOff = this.props.y - 5
+    } else if (this.props.tagPosition == 1) {
+      //tag at right
+      xOff = this.props.x + 5
+      yOff = this.props.y + 0.5
+    } else if (this.props.tagPosition == 2) {
+      //tag at bottom
+      xOff = this.props.x - (this.state.textBoxWidth/2)
+      yOff = this.props.y + 6
+    } else {
+      //tag at left
+      xOff = this.props.x - (this.state.textBoxWidth) - 5
+      yOff = this.props.y + 0.5
+    }
     return (
       <g>
         <Circle
@@ -63,15 +126,16 @@ export default class Point extends React.Component<PointProps, any> {
           cy={this.props.y}
           r={2}
           onClick={this.handlePointClick}
-          onMouseDown={this.handleMouseDown}
           theme={{
             isDragging: this.props.isDragging,
-            isSelected: this.props.isSelected
+            isSelected: this.props.isSelected,
+            color: this.props.color
           }}
         />
         <Tag 
-        x={this.props.x} 
-        y={this.props.y}
+          x={xOff}
+          y={yOff}
+          ref={this.tagRef}
         >
           {this.props.tag}
         </Tag>
