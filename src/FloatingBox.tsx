@@ -44,9 +44,11 @@ export interface FloatingBoxProps {
     tag: string,
     x: number,
     y: number,
+    color: string
   },
   colors: string[],
   handleTagChange: (e: any) => void
+  handleColorUpdate: (c: string) => void
 }
 
 export default class FloatingBox extends React.Component<FloatingBoxProps, any> {
@@ -84,10 +86,12 @@ export default class FloatingBox extends React.Component<FloatingBoxProps, any> 
         <TagLabel>
           Color
         </TagLabel>
-        
         <ColorMenu 
           colorList={this.props.colors}
+          selectedColor={this.props.activePoint.color}
+          handleColorUpdate={this.props.handleColorUpdate}
         />
+
       </FormWrapper>
       </FloatingBoxWrapper>
     );

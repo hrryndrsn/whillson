@@ -216,12 +216,12 @@ class Container extends Component<{}, ContainerState> {
 
   //mouse down on contianer 
   handleMouseDown = (e: any) => {
-    console.log(e.target.id)
     let newId: number;
     if (e.target.id) {
-      if ( e.target.id === "inputField" 
-          || e.target.id === "floatingBoxContainer"
-          || e.target.id === "formWrapper"
+      if ( e.target.id === "inputField" // is the name input field
+          || e.target.id === "floatingBoxContainer" // is the editor bg
+          || e.target.id === "formWrapper" // is the editor bg
+          || e.target.id.charAt(0) === "#" //is a color block 
         ) {
         // mouse down over a 'secondary element'
         return
@@ -260,7 +260,7 @@ class Container extends Component<{}, ContainerState> {
     if (this.state.selectedPoint === -1) {
       return (
         <EmptyFloatingBox>
-          <EmptyMessage>Select a point</EmptyMessage>
+          <EmptyMessage></EmptyMessage>
         </EmptyFloatingBox>
       )
     } else {
@@ -269,8 +269,18 @@ class Container extends Component<{}, ContainerState> {
           activePoint={this.state.points[this.state.selectedPoint]}
           handleTagChange={this.handleTagChange}
           colors={pointColors}
+          handleColorUpdate={this.handleUpdatePointColor}
         />
       )
+    }
+  }
+
+  handleUpdatePointColor = (c: string) => {
+    if (this.state.selectedPoint !== -1) {
+      let pointList = this.state.points;
+      let selectedPt = this.state.selectedPoint
+      pointList[selectedPt].color = c
+      this.setState({points: pointList})
     }
   }
 

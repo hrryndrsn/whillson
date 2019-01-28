@@ -6,7 +6,7 @@ const ColorBlock = styled.div`
   height: 30px;
   background: ${props => props.theme.backgroundColor};
   border-radius: 15px;
-  opacity: 0.1;
+  opacity: ${props => props.theme.selectedColor == props.theme.backgroundColor ? 1 : 0.2};
   transition: opacity 200ms ease-in-out;
   &:hover {
     opacity: 1;
@@ -21,7 +21,9 @@ const ColorMenuWrapper = styled.div`
 `
 
 export interface ColorMenuProps {
-  colorList: string[]
+  colorList: string[];
+  selectedColor: string;
+  handleColorUpdate: (c: string) => void
 }
 
 export interface ColorMenuState {
@@ -32,13 +34,25 @@ export default class ColorMenu extends React.Component<
   ColorMenuState> 
 {
   state: ColorMenuState = {
-    colorList: this.props.colorList
+    colorList: this.props.colorList,
   }
 
-  renderColors = (color: string) => {
+  handleColorBlockClick = (e: any) => {
+    //call container method to update
+    // the selected point's color
+    this.props.handleColorUpdate(e.target.id)
+  }
+
+  renderColors = (color: string, index: number) => {
     return (
     <ColorBlock
-      theme={{backgroundColor: color}} 
+      theme={{
+        backgroundColor: color, 
+        selectedColor: this.props.selectedColor
+      }} 
+      id={color}
+      key={index}
+      onClick={this.handleColorBlockClick}
     />
     )
   }
@@ -47,8 +61,8 @@ export default class ColorMenu extends React.Component<
     return (
       <ColorMenuWrapper>
         {
-          this.props.colorList.map((color: string) =>  
-          this.renderColors(color)
+          this.props.colorList.map((color: string, index: number) =>  
+          this.renderColors(color, index)
         )}
       </ColorMenuWrapper>
     );
