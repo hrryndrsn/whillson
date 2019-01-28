@@ -37,13 +37,14 @@ export interface PointProps {
   handleSelectPoint: (id: number) => void;
   tag: string;
   color: string;
+  tagPosition: number;
 }
 
 export default class Point extends React.Component<PointProps, any> {
   tagRef = React.createRef<SVGTextElement>();
 
   state = {
-    textBoxWidth: 0
+    textBoxWidth: 0,
   }
 
   componentDidMount = () => {
@@ -65,8 +66,63 @@ export default class Point extends React.Component<PointProps, any> {
     const pId = parseInt(e.target.id);
     this.props.handleSelectPoint(pId);
   };
+
+  renderXOffset = () => {
+    switch (this.props.tagPosition) {
+      case 0:
+        this.props.x - (this.state.textBoxWidth/2)
+        break;
+      case 1:
+        this.props.x - (this.state.textBoxWidth/2)
+        break;
+      case 2:
+        this.props.x - (this.state.textBoxWidth/2)
+        break;
+      case 4:
+        this.props.x - (this.state.textBoxWidth/2)
+        break;
+    }
+  }
+
+  renderYOffset = (): any => {
+    return this.props.x - (this.state.textBoxWidth/2)
+    // switch (this.props.tagPosition) {
+    //   case 0:
+    //     this.props.y - 5
+    //     break;
+    //   case 1:
+    //     this.props.y - 5
+    //     break;
+    //   case 2:
+    //     this.props.y - 5
+    //     break;
+    //   case 4:
+    //     this.props.y - 5
+    //     break;
+    // }
+  }
   
   public render() {
+    let  xOff 
+    let  yOff 
+
+    if (this.props.tagPosition == 0) {
+      //tag at top
+      xOff = this.props.x - (this.state.textBoxWidth/2)
+      yOff = this.props.y - 5
+    } else if (this.props.tagPosition == 1) {
+      //tag at right
+      xOff = this.props.x + (this.state.textBoxWidth ) - 5
+      yOff = this.props.y + 0.5
+    } else if (this.props.tagPosition == 2) {
+      //tag at bottom
+      xOff = this.props.x - (this.state.textBoxWidth/2)
+      yOff = this.props.y + 6
+    } else {
+      //tag at left
+      xOff = this.props.x - (this.state.textBoxWidth ) - 4
+      yOff = this.props.y + 0.5
+    }
     return (
       <g>
         <Circle
@@ -82,8 +138,8 @@ export default class Point extends React.Component<PointProps, any> {
           }}
         />
         <Tag 
-          x={this.props.x - (this.state.textBoxWidth/2)}
-          y={this.props.y - 5}
+          x={xOff}
+          y={yOff}
           ref={this.tagRef}
         >
           {this.props.tag}

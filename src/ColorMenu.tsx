@@ -66,7 +66,9 @@ export default class ColorMenu extends React.Component<
 
   public render() {
     return (
-      <ColorMenuWrapper>
+      <ColorMenuWrapper
+        id={"#ColorMenuWrapper"}
+      >
         {
           this.props.colorList.map((color: string, index: number) =>  
           this.renderColors(color, index)

@@ -57,6 +57,27 @@ margin-top: 20px;
 const FormFieldGroup = styled.div``
 
 
+const DeleteButton = styled.div`
+width:66px;
+height: 30px;
+font-size: 16px;
+text-align: center;
+border-radius: 5px;
+line-height: 30px;
+margin-left: 50px;;
+margin-top: 42px;
+margin-right: 0px;
+background: none;
+border: 0.5px solid #cccc;
+padding: 2px 4px;;
+&:hover {
+  box-shadow: none;
+  border: none; 
+  background: red;
+  color: white;
+}
+`
+
 //---------------------------------------------------------------------------
 
 export interface FloatingBoxProps {
@@ -69,6 +90,7 @@ export interface FloatingBoxProps {
   colors: string[],
   handleTagChange: (e: any) => void
   handleColorUpdate: (c: string) => void
+  handleUpdateTagPosition: (n: number) => void
 }
 
 export default class FloatingBox extends React.Component<FloatingBoxProps, any> {
@@ -102,17 +124,25 @@ export default class FloatingBox extends React.Component<FloatingBoxProps, any> 
         id="formWrapper"
         onSubmit={this.handleSubmit}
       >
-        <TagLabel>
-          Name
-        </TagLabel>
-        <PointTagInput 
-          type="text" 
-          id="inputField"
-          autoFocus={true}
-          value={this.props.activePoint.tag}
-          onChange={this.props.handleTagChange}
-        />
-
+      {/* Row 1 */}
+      <ControlRow>
+          <FormFieldGroup>
+            <TagLabel>
+              Name
+            </TagLabel>
+            <PointTagInput 
+              type="text" 
+              id="inputField"
+              autoFocus={true}
+              value={this.props.activePoint.tag}
+              onChange={this.props.handleTagChange}
+            />  
+          </FormFieldGroup>
+          <FormFieldGroup>
+            <DeleteButton>Remove</DeleteButton>
+          </FormFieldGroup>
+        </ControlRow>
+      {/* Row 2 */}
         <ControlRow>
           <FormFieldGroup>
             <TagLabel>
@@ -125,10 +155,7 @@ export default class FloatingBox extends React.Component<FloatingBoxProps, any> 
             />
           </FormFieldGroup>
           <FormFieldGroup>
-            <TagLabel>
-              Placement
-            </TagLabel>
-            <TagPositionMenu/>
+            <TagPositionMenu handleUpdate={this.props.handleUpdateTagPosition}/>
           </FormFieldGroup>
         </ControlRow>
       </FormWrapper>

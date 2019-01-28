@@ -4,9 +4,9 @@ import Point from "./Point";
 import FloatingBox from "./FloatingBox";
 import {pointColors} from "./colors"
 
-import {} from "./paths";
 
 import "./App.css";
+import { throws } from "assert";
 
 const ContainerWrapper = styled.div`
   margin: 0 auto;
@@ -21,9 +21,20 @@ const Hill = styled.path`
   fill: white;
 `;
 const TapPath = styled.path`
-  stroke: rgba(0, 0, 0, 0);
   strokeWidth: 1;
-  stroke: #ccc;
+  stroke: ${props => (props.theme.active ? "#6fcf97" : "#ccc")};
+  transition: stroke 200ms ease-out;
+  &:hover {
+    cursor: pointer;
+    stroke:#6fcf97
+  }
+
+`;
+//the actuall hover target
+const FakeTapPath = styled.path`
+  opacity: 0;
+  stroke-width: 4;
+  stroke: red;
   fill: none;
   transition: stroke 200ms ease-out;
   &:hover {
@@ -72,6 +83,7 @@ interface Pt {
   y: number;
   tag: string;
   color: string;
+  tagPlacement: number;
 }
 
 interface ContainerState {
@@ -188,7 +200,7 @@ class Container extends Component<{}, ContainerState> {
     const ptId = this.state.points.length
     //add point
     this.setState({
-        points: [...this.state.points, { x: newPoint.x, y: newPoint.y, tag: "New point", color: this.getRandomColor()}],
+        points: [...this.state.points, { x: newPoint.x, y: newPoint.y, tag: "New point", color: this.getRandomColor(), tagPlacement: 0}],
         selectedPoint: ptId
       });
     
@@ -271,6 +283,7 @@ class Container extends Component<{}, ContainerState> {
           handleTagChange={this.handleTagChange}
           colors={pointColors}
           handleColorUpdate={this.handleUpdatePointColor}
+          handleUpdateTagPosition={this.handleUpdateTagPosition}
         />
       )
     }
@@ -283,6 +296,16 @@ class Container extends Component<{}, ContainerState> {
       pointList[selectedPt].color = c
       this.setState({points: pointList})
     }
+  }
+
+  handleUpdateTagPosition = (newPos: number) => {
+    console.log("update pos to ->", newPos);
+    if (this.state.selectedPoint !== -1) {
+      let pointList = this.state.points;
+      let selectedPt = this.state.selectedPoint
+      pointList[selectedPt].tagPlacement = newPos
+      this.setState({points: pointList})
+    } 
   }
 
   render() {
@@ -311,12 +334,19 @@ class Container extends Component<{}, ContainerState> {
             fill="none"
             strokeWidth="0.694444"
           />
+          <FakeTapPath
+            d="M0 48C24.8264 48 25 22 50 22C75 22 75.1736 48 100 48"
+            onMouseOver={this.mouseOverTapPath}
+            onMouseOut={this.mouseOutTapPath}
+            onClick={this.handleClick}
+          />
           <TapPath
             d="M0 48C24.8264 48 25 22 50 22C75 22 75.1736 48 100 48"
             onMouseOver={this.mouseOverTapPath}
             onMouseOut={this.mouseOutTapPath}
             onClick={this.handleClick}
             ref={this.pathRef}
+            theme={{active: this.state.tapPathActive}}
           />
           {this.state.points.map((point: Pt, index) => {
             return (
@@ -330,6 +360,7 @@ class Container extends Component<{}, ContainerState> {
                 handleSelectPoint={this.handleSelectPoint}
                 tag={point.tag}
                 color={point.color}
+                tagPosition={point.tagPlacement}
               />
             )
           })}
