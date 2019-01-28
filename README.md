@@ -1,4 +1,3 @@
 ## to do
 
-//onfocus -> set container state to prevent deletion
-//check container state in delete function
+- add annotations "figuring it out" + "getting it done
