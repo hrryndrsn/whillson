@@ -140,6 +140,80 @@ class Container extends Component<{}, ContainerState> {
       }
     });
 
+    window.addEventListener("touchstart", (e: any) => {
+      let newId: number;
+      if (e.target.id) {
+      if ( e.target.id === "inputField" // is the name input field
+          || e.target.id === "floatingBoxContainer" // is the editor bg
+          || e.target.id === "formWrapper" // is the editor bg
+          || e.target.id.charAt(0) === "#" //is a color block 
+          || e.target.id.charAt(0) === "c" //is position control
+        ) {
+        // mouse down over a 'secondary element'
+        return
+      }
+      newId = parseInt(e.target.id)
+      this.setState({isDragging: true, draggedPoint: newId, selectedPoint: newId})
+    } else {
+      //no id, no element we care about is the target
+      this.setState({
+        isDragging: true, 
+        draggedPoint: -1, 
+        selectedPoint: -1,
+        inputFocused: false
+      })
+      return
+    }
+    })
+
+    window.addEventListener("touchmove", (e: any) => {
+      console.log("move x:", e.changedTouches[0].pageX)
+      console.log("move y:", e.changedTouches[0].pageY)
+
+      const tx = e.changedTouches[0].pageX
+      const ty = e.changedTouches[0].pageY
+
+      const xPct = tx / window.innerWidth,
+            path = this.pathRef.current;
+      let point;
+      if (path) {
+        let tryPoint = path.getPointAtLength(xPct);
+        if (tryPoint !== undefined) {
+          point = tryPoint;
+        }
+      }
+      //call pointOnCrv function
+      const pt = this.pointOnCrv(tx / window.innerWidth);
+
+      if (this.state.isDragging) {
+        if (this.state.selectedPoint !== -1) {
+          let id = this.state.selectedPoint
+          let pointsList: Pt[] = this.state.points 
+          pointsList[id].x = pt.x
+          pointsList[id].y = pt.y
+  
+          this.setState({
+            points: pointsList
+          })
+        } 
+      }
+
+      this.setState({
+        mouse: { x: tx, y: ty },
+        mouseXPercent: tx / window.innerWidth,
+        mousePoseOnLine: {
+          x: pt.x,
+          y: pt.y
+        }
+      });
+    
+    })
+
+    window.addEventListener("touchend", (e: any) => {
+      console.log("End", e)
+
+    })
+
     window.addEventListener("keydown", (e: KeyboardEvent) => {
       if (e.keyCode === 8 && this.state.selectedPoint !== -1) {
         this.handleDeletePoint()
