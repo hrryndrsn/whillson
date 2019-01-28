@@ -141,6 +141,7 @@ export default class FloatingBox extends React.Component<FloatingBoxProps, any> 
               onChange={this.props.handleTagChange}
               onFocus={this.props.toggleInputFocus}
               onBlur={this.props.toggleInputFocus}
+              autoComplete={"off"}
             />  
           </FormFieldGroup>
           <FormFieldGroup id="c">

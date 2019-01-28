@@ -30,9 +30,9 @@ const TapPath = styled.path`
     stroke:#6fcf97
   }
   @media(max-width: 500px) {
-    stroke-width: 4
+    stroke-width: 2
   }
-`;
+`
 //the actuall hover target
 const FakeTapPath = styled.path`
   opacity: 0;

@@ -7,28 +7,26 @@ const Circle = styled.circle`
   stroke: ${props => props.theme.isSelected ? "#fff" : "none"};
   r: ${props =>
     props.theme.isDragging 
-      ? 2.5 
+      ? 3
       : props.theme.isSelected 
       ? 3
-      : 2
+      : 3
     };
   box-shadow: 0px 10px 0px #ccc;
   transition: r 75ms ease-in-out, 
               fill 75ms ease-in-out;
   &:hover {
-    r: ${props => props.theme.isSelected ? 3 : 2.5};
+    r: ${props => props.theme.isSelected ? 3 : 3};
   }
   @media(max-width: 500px) {
     r: ${props =>
     props.theme.isDragging 
-      ? 4.5 
+      ? 3
       : props.theme.isSelected 
-      ? 6
-      : 4
+      ? 3
+      : 3
     };
-    &:hover {
-    r: ${props => props.theme.isSelected ? 6 : 4.5};
-  }
+    
   }
 `;
 
@@ -38,6 +36,9 @@ const Tag = styled.text`
   font-size: 2px;
   font-family: sans-serif;
   background: #333;
+  @media(max-width: 500px) {
+    font-size: 4px;
+  }
 `;
 
 export interface PointProps {
