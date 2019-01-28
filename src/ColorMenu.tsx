@@ -18,6 +18,13 @@ const ColorMenuWrapper = styled.div`
   grid-template-columns: repeat(8, 30px);
   margin-top: 10px;
   gap: 10px;
+
+  @media(max-width: 820px) {
+    grid-template-columns: repeat(6, 30px);
+  }
+  @media(max-width: 480px) {
+    grid-template-columns: repeat(4, 30px);
+  }
 `
 
 export interface ColorMenuProps {

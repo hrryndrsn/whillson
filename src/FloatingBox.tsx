@@ -1,19 +1,30 @@
 import * as React from 'react';
 import styled, { ThemeConsumer } from 'styled-components';
 import ColorMenu from './ColorMenu';
+import TagPositionMenu from './ TagPositionMenu';
 
 
 
 const FloatingBoxWrapper = styled.div`
-  display: grid;
-  padding: 0px 25vw;
-  left: 0;
-  bottom: 0;
+ position: fixed;
+ display: grid;
+  top: 42vw;
   width: 50%;
+  left: 25%;
   height: 35vh;
-  min-height: 20px;
   background: none;
   font-size: 32px;
+
+  @media(max-width: 820px) {
+    /* width: 60%;
+    left: 20% */
+  }
+
+  @media(max-width: 680px) {
+    top: 50vw;
+    width: 70%;
+    left: 15%;
+  }
 `
 
 const FormWrapper = styled.form`
@@ -37,6 +48,15 @@ const TagLabel = styled.label`
   margin-bottom: 12px;
 `
 
+const ControlRow = styled.div`
+display: flex;
+justify-content: space-between;
+margin-top: 20px;
+`
+
+const FormFieldGroup = styled.div``
+
+
 //---------------------------------------------------------------------------
 
 export interface FloatingBoxProps {
@@ -59,8 +79,16 @@ export default class FloatingBox extends React.Component<FloatingBoxProps, any> 
     screenPosY: (this.props.activePoint.y / 100) * window.innerHeight
   }
 
+  boxRef = React.createRef<HTMLDivElement>();
+
   private handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+  }
+
+  componentDidMount = () => {
+    let maybeRef = this.boxRef.current
+    if (maybeRef) {
+    }
   }
 
    public render() {
@@ -68,6 +96,7 @@ export default class FloatingBox extends React.Component<FloatingBoxProps, any> 
       <FloatingBoxWrapper
         id="floatingBoxContainer"
         theme={{x: this.state.screenPosX, y: this.state.screenPosY}}
+        ref={this.boxRef}
       >
       <FormWrapper
         id="formWrapper"
@@ -83,15 +112,25 @@ export default class FloatingBox extends React.Component<FloatingBoxProps, any> 
           value={this.props.activePoint.tag}
           onChange={this.props.handleTagChange}
         />
-        <TagLabel>
-          Color
-        </TagLabel>
-        <ColorMenu 
-          colorList={this.props.colors}
-          selectedColor={this.props.activePoint.color}
-          handleColorUpdate={this.props.handleColorUpdate}
-        />
 
+        <ControlRow>
+          <FormFieldGroup>
+            <TagLabel>
+              Color
+            </TagLabel>
+            <ColorMenu 
+              colorList={this.props.colors}
+              selectedColor={this.props.activePoint.color}
+              handleColorUpdate={this.props.handleColorUpdate}
+            />
+          </FormFieldGroup>
+          <FormFieldGroup>
+            <TagLabel>
+              Placement
+            </TagLabel>
+            <TagPositionMenu/>
+          </FormFieldGroup>
+        </ControlRow>
       </FormWrapper>
       </FloatingBoxWrapper>
     );

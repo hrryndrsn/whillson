@@ -222,6 +222,7 @@ class Container extends Component<{}, ContainerState> {
           || e.target.id === "floatingBoxContainer" // is the editor bg
           || e.target.id === "formWrapper" // is the editor bg
           || e.target.id.charAt(0) === "#" //is a color block 
+          || e.target.id.charAt(0) === "c" //is position control
         ) {
         // mouse down over a 'secondary element'
         return
