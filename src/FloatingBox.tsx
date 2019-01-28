@@ -12,7 +12,7 @@ const FloatingBoxWrapper = styled.div`
   width: 50%;
   left: 25%;
   height: 35vh;
-  background: none;
+  background: white;;
   font-size: 32px;
 
   @media(max-width: 820px) {
@@ -28,6 +28,7 @@ const FloatingBoxWrapper = styled.div`
 `
 
 const FormWrapper = styled.form`
+background: white;
 `
 const PointTagInput = styled.input`
   font-size: 32px;
@@ -92,6 +93,7 @@ export interface FloatingBoxProps {
   handleColorUpdate: (c: string) => void
   handleUpdateTagPosition: (n: number) => void
   handleDeletePoint: () => void
+  toggleInputFocus: () => void
 }
 
 export default class FloatingBox extends React.Component<FloatingBoxProps, any> {
@@ -122,12 +124,12 @@ export default class FloatingBox extends React.Component<FloatingBoxProps, any> 
         ref={this.boxRef}
       >
       <FormWrapper
-        id="formWrapper"
+        id="cformWrapper"
         onSubmit={this.handleSubmit}
       >
       {/* Row 1 */}
-      <ControlRow>
-          <FormFieldGroup>
+      <ControlRow id="cControlRow1">
+          <FormFieldGroup id="c">
             <TagLabel>
               Name
             </TagLabel>
@@ -137,9 +139,11 @@ export default class FloatingBox extends React.Component<FloatingBoxProps, any> 
               autoFocus={true}
               value={this.props.activePoint.tag}
               onChange={this.props.handleTagChange}
+              onFocus={this.props.toggleInputFocus}
+              onBlur={this.props.toggleInputFocus}
             />  
           </FormFieldGroup>
-          <FormFieldGroup>
+          <FormFieldGroup id="c">
             <DeleteButton
               id="cDeleteButton"
               onClick={this.props.handleDeletePoint}
@@ -147,8 +151,8 @@ export default class FloatingBox extends React.Component<FloatingBoxProps, any> 
           </FormFieldGroup>
         </ControlRow>
       {/* Row 2 */}
-        <ControlRow>
-          <FormFieldGroup>
+        <ControlRow id="cControlRow2">
+          <FormFieldGroup id="c">
             <TagLabel>
               Color
             </TagLabel>
@@ -157,8 +161,8 @@ export default class FloatingBox extends React.Component<FloatingBoxProps, any> 
               selectedColor={this.props.activePoint.color}
               handleColorUpdate={this.props.handleColorUpdate}
             />
-          </FormFieldGroup>
-          <FormFieldGroup>
+          </FormFieldGroup >
+          <FormFieldGroup id="c">
             <TagPositionMenu handleUpdate={this.props.handleUpdateTagPosition}/>
           </FormFieldGroup>
         </ControlRow>

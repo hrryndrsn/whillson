@@ -56,7 +56,7 @@ class TagPositionMenu extends React.Component<TagPositionMenuProps, {}> {
   };
   public render() {
     return (
-      <TagPositionMenuWrapper>
+      <TagPositionMenuWrapper id="ctagPosWrapper">
         <TagPosButton onClick={this.handleClick} id="ctop">
           {"↑"}
         </TagPosButton>

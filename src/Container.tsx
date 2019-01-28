@@ -29,7 +29,9 @@ const TapPath = styled.path`
     cursor: pointer;
     stroke:#6fcf97
   }
-
+  @media(max-width: 500px) {
+    stroke-width: 4
+  }
 `;
 //the actuall hover target
 const FakeTapPath = styled.path`
@@ -102,6 +104,7 @@ interface ContainerState {
   isDragging: boolean;
   draggedPoint: number;
   selectedPoint: number;
+  inputFocused: boolean;
 }
 
 /////---------------------------------------------------------
@@ -121,7 +124,8 @@ class Container extends Component<{}, ContainerState> {
     points: [],
     isDragging: false,
     draggedPoint: -1, //the point being dragged
-    selectedPoint: -1 //the point which has been clicked
+    selectedPoint: -1, //the point which has been clicked
+    inputFocused: false,
   };
 
   pathRef = React.createRef<SVGPathElement>();
@@ -250,7 +254,12 @@ class Container extends Component<{}, ContainerState> {
       this.setState({isDragging: true, draggedPoint: newId, selectedPoint: newId})
     } else {
       //no id, no element we care about is the target
-      this.setState({isDragging: true, draggedPoint: -1, selectedPoint: -1})
+      this.setState({
+        isDragging: true, 
+        draggedPoint: -1, 
+        selectedPoint: -1,
+        inputFocused: false
+      })
       return
     }
   }
@@ -292,6 +301,7 @@ class Container extends Component<{}, ContainerState> {
           handleColorUpdate={this.handleUpdatePointColor}
           handleUpdateTagPosition={this.handleUpdateTagPosition}
           handleDeletePoint={this.handleDeletePoint}
+          toggleInputFocus={this.toggleFocusInput}
         />
       )
     }
@@ -317,12 +327,17 @@ class Container extends Component<{}, ContainerState> {
   }
 
   handleDeletePoint = () => {
-    if (this.state.selectedPoint !== -1) {
+    if (this.state.selectedPoint !== -1 
+      && this.state.inputFocused === false) {
       let pointList = this.state.points;
       let selectedPt = this.state.selectedPoint
       pointList.splice(selectedPt, 1)
       this.setState({points: pointList, selectedPoint: -1})
     } 
+  }
+
+  toggleFocusInput = () => {
+    this.setState({inputFocused: !this.state.inputFocused})
   }
 
   render() {

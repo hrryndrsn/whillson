@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 const Circle = styled.circle`
-
+  stroke-width: ${props => props.theme.isSelected ? 1 : 0};
   fill: ${props => props.theme.color};
   stroke: ${props => props.theme.isSelected ? "#fff" : "none"};
   r: ${props =>
@@ -12,11 +12,23 @@ const Circle = styled.circle`
       ? 3
       : 2
     };
-    
+  box-shadow: 0px 10px 0px #ccc;
   transition: r 75ms ease-in-out, 
               fill 75ms ease-in-out;
   &:hover {
     r: ${props => props.theme.isSelected ? 3 : 2.5};
+  }
+  @media(max-width: 500px) {
+    r: ${props =>
+    props.theme.isDragging 
+      ? 4.5 
+      : props.theme.isSelected 
+      ? 6
+      : 4
+    };
+    &:hover {
+    r: ${props => props.theme.isSelected ? 6 : 4.5};
+  }
   }
 `;
 
@@ -84,23 +96,6 @@ export default class Point extends React.Component<PointProps, any> {
     }
   }
 
-  renderYOffset = (): any => {
-    return this.props.x - (this.state.textBoxWidth/2)
-    // switch (this.props.tagPosition) {
-    //   case 0:
-    //     this.props.y - 5
-    //     break;
-    //   case 1:
-    //     this.props.y - 5
-    //     break;
-    //   case 2:
-    //     this.props.y - 5
-    //     break;
-    //   case 4:
-    //     this.props.y - 5
-    //     break;
-    // }
-  }
   
   public render() {
     let  xOff 
@@ -112,7 +107,7 @@ export default class Point extends React.Component<PointProps, any> {
       yOff = this.props.y - 5
     } else if (this.props.tagPosition == 1) {
       //tag at right
-      xOff = this.props.x + (this.state.textBoxWidth ) - 5
+      xOff = this.props.x + 5
       yOff = this.props.y + 0.5
     } else if (this.props.tagPosition == 2) {
       //tag at bottom
@@ -120,7 +115,7 @@ export default class Point extends React.Component<PointProps, any> {
       yOff = this.props.y + 6
     } else {
       //tag at left
-      xOff = this.props.x - (this.state.textBoxWidth ) - 4
+      xOff = this.props.x - (this.state.textBoxWidth) - 5
       yOff = this.props.y + 0.5
     }
     return (

@@ -1,4 +1,4 @@
 ## to do
 
-- wire up delete point button
-- fix right and left positioning
+//onfocus -> set container state to prevent deletion
+//check container state in delete function
