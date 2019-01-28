@@ -91,6 +91,7 @@ export interface FloatingBoxProps {
   handleTagChange: (e: any) => void
   handleColorUpdate: (c: string) => void
   handleUpdateTagPosition: (n: number) => void
+  handleDeletePoint: () => void
 }
 
 export default class FloatingBox extends React.Component<FloatingBoxProps, any> {
@@ -139,7 +140,10 @@ export default class FloatingBox extends React.Component<FloatingBoxProps, any> 
             />  
           </FormFieldGroup>
           <FormFieldGroup>
-            <DeleteButton>Remove</DeleteButton>
+            <DeleteButton
+              id="cDeleteButton"
+              onClick={this.props.handleDeletePoint}
+            >Remove</DeleteButton>
           </FormFieldGroup>
         </ControlRow>
       {/* Row 2 */}

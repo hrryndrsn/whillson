@@ -7,6 +7,7 @@ import {pointColors} from "./colors"
 
 import "./App.css";
 import { throws } from "assert";
+import { array } from "prop-types";
 
 const ContainerWrapper = styled.div`
   margin: 0 auto;
@@ -134,6 +135,12 @@ class Container extends Component<{}, ContainerState> {
         this.getPointOnPath(ref, 0.5);
       }
     });
+
+    window.addEventListener("keydown", (e: KeyboardEvent) => {
+      if (e.keyCode === 8 && this.state.selectedPoint !== -1) {
+        this.handleDeletePoint()
+      }
+    })
 
     window.addEventListener("mousemove", (e: MouseEvent) => {
       const xPct = e.x / window.innerWidth,
@@ -284,6 +291,7 @@ class Container extends Component<{}, ContainerState> {
           colors={pointColors}
           handleColorUpdate={this.handleUpdatePointColor}
           handleUpdateTagPosition={this.handleUpdateTagPosition}
+          handleDeletePoint={this.handleDeletePoint}
         />
       )
     }
@@ -305,6 +313,15 @@ class Container extends Component<{}, ContainerState> {
       let selectedPt = this.state.selectedPoint
       pointList[selectedPt].tagPlacement = newPos
       this.setState({points: pointList})
+    } 
+  }
+
+  handleDeletePoint = () => {
+    if (this.state.selectedPoint !== -1) {
+      let pointList = this.state.points;
+      let selectedPt = this.state.selectedPoint
+      pointList.splice(selectedPt, 1)
+      this.setState({points: pointList, selectedPoint: -1})
     } 
   }
 
