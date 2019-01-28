@@ -22,10 +22,10 @@ const Hill = styled.path`
 `;
 const TapPath = styled.path`
   stroke: rgba(0, 0, 0, 0);
-  stroke-width: 1;
+  strokeWidth: 1;
   stroke: #ccc;
   fill: none;
-  transition: stroke 70ms ease-out;
+  transition: stroke 200ms ease-out;
   &:hover {
     cursor: pointer;
     stroke:#6fcf97
@@ -44,13 +44,25 @@ const GhostCircle = styled.circle`
   opacity: ${props => (props.theme.active ? 1 : 0)};
   fill: #6fcf97;
   r: ${props => (props.theme.active ? 1.5 : 0.5)};
-  transition: opacity 100ms ease-in-out;
+  transition: opacity 100ms ease-in-out ;
 `;
 
 const EmptyFloatingBox = styled.div`
-    width: 60%;
-    height: 40vh; 
-    background: white;
+    display: grid;
+  padding: 0px 25vw;
+  left: 0;
+  bottom: 0;
+  width: 50%;
+  height: 35vh;
+  min-height: 20px;
+  background: none;
+  font-size: 32px;
+`
+
+const EmptyMessage = styled.p`
+  text-align: center;
+  padding-top: 50px;
+  opacity: 0.2;
 `
 
 ////-----------------------------------------------------
@@ -105,7 +117,7 @@ class Container extends Component<{}, ContainerState> {
     window.addEventListener("load", e => {
       const ref = this.pathRef.current;
       if (!ref) {
-        console.log("ref is null");
+        return
       } else {
         this.getPointOnPath(ref, 0.5);
       }
@@ -247,13 +259,16 @@ class Container extends Component<{}, ContainerState> {
   renderPointEditor = () => {
     if (this.state.selectedPoint === -1) {
       return (
-        <EmptyFloatingBox/>
+        <EmptyFloatingBox>
+          <EmptyMessage>Select a point</EmptyMessage>
+        </EmptyFloatingBox>
       )
     } else {
       return (
         <FloatingBox 
           activePoint={this.state.points[this.state.selectedPoint]}
           handleTagChange={this.handleTagChange}
+          colors={pointColors}
         />
       )
     }
@@ -268,6 +283,7 @@ class Container extends Component<{}, ContainerState> {
         <SvgWrapper width="100%" height="50%" viewBox={`0 0 100 50`} fill="none">
           >
           <Background onClick={this.handleDeselect} width="100" height="50" fill="#2D9CDB" />
+          <line x1={50} x2={50} y1={0} y2={50} stroke="#ccc"  strokeWidth="0.5" strokeDasharray="1.2" />
           <Hill
             d="M50 22C25 22 24.8264 48 0 48V52H100V48C75.1736 48 75 22 50 22Z"
             fill="#F2F2F2"

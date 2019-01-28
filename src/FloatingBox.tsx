@@ -1,16 +1,18 @@
 import * as React from 'react';
 import styled, { ThemeConsumer } from 'styled-components';
+import ColorMenu from './ColorMenu';
 
 
 
 const FloatingBoxWrapper = styled.div`
   display: grid;
-  padding: 20px 20vw;
+  padding: 0px 25vw;
   left: 0;
   bottom: 0;
-  width: 60%;
+  width: 50%;
   height: 35vh;
-  background: white;
+  min-height: 20px;
+  background: none;
   font-size: 32px;
 `
 
@@ -32,6 +34,7 @@ const TagLabel = styled.label`
   user-select: none;
   font-size: 16px;
   color: #bbb;
+  margin-bottom: 12px;
 `
 
 //---------------------------------------------------------------------------
@@ -42,6 +45,7 @@ export interface FloatingBoxProps {
     x: number,
     y: number,
   },
+  colors: string[],
   handleTagChange: (e: any) => void
 }
 
@@ -68,7 +72,7 @@ export default class FloatingBox extends React.Component<FloatingBoxProps, any> 
         onSubmit={this.handleSubmit}
       >
         <TagLabel>
-          name
+          Name
         </TagLabel>
         <PointTagInput 
           type="text" 
@@ -77,18 +81,13 @@ export default class FloatingBox extends React.Component<FloatingBoxProps, any> 
           value={this.props.activePoint.tag}
           onChange={this.props.handleTagChange}
         />
-        <div>
-          <div> 
-            {/* tag placement controls */}
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
-          <div>
-            {/* colors */}
-          </div>
-        </div>
+        <TagLabel>
+          Color
+        </TagLabel>
+        
+        <ColorMenu 
+          colorList={this.props.colors}
+        />
       </FormWrapper>
       </FloatingBoxWrapper>
     );

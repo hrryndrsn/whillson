@@ -9,14 +9,14 @@ const Circle = styled.circle`
     props.theme.isDragging 
       ? 2.5 
       : props.theme.isSelected 
-      ? 2.5 
+      ? 3
       : 2
     };
     
   transition: r 75ms ease-in-out, 
               fill 75ms ease-in-out;
   &:hover {
-    r: 2.5;
+    r: ${props => props.theme.isSelected ? 3 : 2.5};
   }
 `;
 
