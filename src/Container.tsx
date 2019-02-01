@@ -22,7 +22,7 @@ const Hill = styled.path`
   fill: white;
 `;
 const TapPath = styled.path`
-  strokeWidth: 1;
+  stroke-width: 1;
   stroke: ${props => (props.theme.active ? "#6fcf97" : "#ccc")};
   transition: stroke 200ms ease-out;
   &:hover {
@@ -79,6 +79,14 @@ const EmptyMessage = styled.p`
   opacity: 0.2;
 `
 
+
+const Annotation = styled.text`
+  font-size: 1.5px;
+  fill: #BDBDBD;
+  font-weight: bold;
+  user-select: none;
+
+`
 ////-----------------------------------------------------
 
 interface Pt {
@@ -167,13 +175,12 @@ class Container extends Component<{}, ContainerState> {
     })
 
     window.addEventListener("touchmove", (e: any) => {
-      console.log("move x:", e.changedTouches[0].pageX)
-      console.log("move y:", e.changedTouches[0].pageY)
+      // console.log("move x:", e.changedTouches[0].pageX)
+      // console.log("move y:", e.changedTouches[0].pageY)
 
-      const tx = e.changedTouches[0].pageX
-      const ty = e.changedTouches[0].pageY
-
-      const xPct = tx / window.innerWidth,
+      const tx = e.changedTouches[0].pageX,
+            ty = e.changedTouches[0].pageY,
+            xPct = tx / window.innerWidth,
             path = this.pathRef.current;
       let point;
       if (path) {
@@ -424,6 +431,12 @@ class Container extends Component<{}, ContainerState> {
           >
           <Background onClick={this.handleDeselect} width="100" height="50" fill="#2D9CDB" />
           <line x1={50} x2={50} y1={0} y2={50} stroke="#ccc"  strokeWidth="0.5" strokeDasharray="1.2" />
+          <Annotation x={2} y={3}>
+            Figuring it out
+          </Annotation>
+          <Annotation x={86} y={3}>
+            Making it happen
+          </Annotation>
           <Hill
             d="M50 22C25 22 24.8264 48 0 48V52H100V48C75.1736 48 75 22 50 22Z"
             fill="#F2F2F2"

@@ -2,31 +2,33 @@ import React from "react";
 import styled from "styled-components";
 
 const Circle = styled.circle`
-  stroke-width: ${props => props.theme.isSelected ? 1 : 0};
+  stroke-width: ${props => props.theme.isSelected ? 0.5 : 0};
   fill: ${props => props.theme.color};
   stroke: ${props => props.theme.isSelected ? "#fff" : "none"};
   r: ${props =>
     props.theme.isDragging 
-      ? 3
+      ? 2
       : props.theme.isSelected 
-      ? 3
-      : 3
+      ? 2
+      : 2
     };
   box-shadow: 0px 10px 0px #ccc;
   transition: r 75ms ease-in-out, 
               fill 75ms ease-in-out;
   &:hover {
-    r: ${props => props.theme.isSelected ? 3 : 3};
+    r: 2.5;
   }
   @media(max-width: 500px) {
     r: ${props =>
     props.theme.isDragging 
-      ? 3
+      ? 4
       : props.theme.isSelected 
-      ? 3
-      : 3
+      ? 4
+      : 4
     };
-    
+    &:hover {
+    r: ${props => props.theme.isSelected ? 4 : 4};
+  }
   }
 `;
 
