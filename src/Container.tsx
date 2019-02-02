@@ -3,11 +3,11 @@ import styled from "styled-components";
 import Point from "./Point";
 import FloatingBox from "./FloatingBox";
 import {pointColors} from "./colors"
+import {adjectives, hillWords, generateRandom} from './words'
 
 
 import "./App.css";
-import { throws } from "assert";
-import { array } from "prop-types";
+
 
 const ContainerWrapper = styled.div`
   margin: 0 auto;
@@ -292,7 +292,7 @@ class Container extends Component<{}, ContainerState> {
     const ptId = this.state.points.length
     //add point
     this.setState({
-        points: [...this.state.points, { x: newPoint.x, y: newPoint.y, tag: "New point", color: this.getRandomColor(), tagPlacement: 0}],
+        points: [...this.state.points, { x: newPoint.x, y: newPoint.y, tag: generateRandom(adjectives, hillWords), color: this.getRandomColor(), tagPlacement: 0}],
         selectedPoint: ptId
       });
     

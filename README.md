@@ -1,4 +1,6 @@
 ## to do
 
-- add annotations "figuring it out" + "getting it done
-sdad
+- update favicon and site name
+- save, load to local storage
+- random new point name -> Adjective + type of hill
+- figure out how to serve the app from a gloang server
