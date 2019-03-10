@@ -6,14 +6,16 @@ import TagPositionMenu from './ TagPositionMenu';
 
 
 const FloatingBoxWrapper = styled.div`
- position: fixed;
  display: grid;
   top: 42vw;
   width: 50%;
   left: 25%;
   height: 35vh;
   background: white;;
+  margin: 0 auto;
   font-size: 32px;
+  margin-top: -50px;
+
 
   @media(max-width: 820px) {
     /* width: 60%;
@@ -22,8 +24,10 @@ const FloatingBoxWrapper = styled.div`
 
   @media(max-width: 680px) {
     top: 50vw;
-    width: 70%;
+    width: 90%;
     left: 15%;
+    margin-top: -20px;
+    transform: scale(0.9);
   }
 `
 

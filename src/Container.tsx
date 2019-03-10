@@ -30,7 +30,7 @@ const TapPath = styled.path`
     stroke:#6fcf97
   }
   @media(max-width: 500px) {
-    stroke-width: 2
+    stroke-width: 1
   }
 `
 //the actuall hover target
@@ -43,6 +43,9 @@ const FakeTapPath = styled.path`
   &:hover {
     cursor: pointer;
     stroke:#6fcf97
+  }
+  @media(max-width: 500px) {
+    stroke-width: 3
   }
 `;
 const MainPath = styled.path`
@@ -62,7 +65,7 @@ const GhostCircle = styled.circle`
 `;
 
 const EmptyFloatingBox = styled.div`
-    display: grid;
+  display: grid;
   padding: 0px 25vw;
   left: 0;
   bottom: 0;
@@ -85,7 +88,6 @@ const Annotation = styled.text`
   fill: #BDBDBD;
   font-weight: bold;
   user-select: none;
-
 `
 ////-----------------------------------------------------
 
@@ -431,11 +433,11 @@ class Container extends Component<{}, ContainerState> {
           >
           <Background onClick={this.handleDeselect} width="100" height="50" fill="#2D9CDB" />
           <line x1={50} x2={50} y1={0} y2={50} stroke="#ccc"  strokeWidth="0.5" strokeDasharray="1.2" />
-          <Annotation x={2} y={3}>
-            Figuring it out
+          <Annotation x={33} y={3}>
+          ← Figuring it out
           </Annotation>
-          <Annotation x={86} y={3}>
-            Making it happen
+          <Annotation x={55} y={3}>
+            Making it happen →
           </Annotation>
           <Hill
             d="M50 22C25 22 24.8264 48 0 48V52H100V48C75.1736 48 75 22 50 22Z"

@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 
 const Circle = styled.circle`
+cursor: ${props => props.theme.isSelected ? "grab" : "pointer"};
   stroke-width: ${props => props.theme.isSelected ? 0.5 : 0};
   fill: ${props => props.theme.color};
   stroke: ${props => props.theme.isSelected ? "#fff" : "none"};
@@ -19,12 +20,13 @@ const Circle = styled.circle`
     r: 2.5;
   }
   @media(max-width: 500px) {
+    stroke-width: ${props => props.theme.isSelected ? 1 : 0};
     r: ${props =>
     props.theme.isDragging 
-      ? 4
+      ? 3
       : props.theme.isSelected 
-      ? 4
-      : 4
+      ? 3
+      : 3
     };
     &:hover {
     r: ${props => props.theme.isSelected ? 4 : 4};
@@ -35,6 +37,7 @@ const Circle = styled.circle`
 const Tag = styled.text`
   fill: #000;
   user-select: none;
+  pointer-events: none;
   font-size: 2px;
   font-family: sans-serif;
   background: #333;
