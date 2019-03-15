@@ -40,7 +40,7 @@ const Tag = styled.text`
   pointer-events: none;
   font-size: 2px;
   font-family: sans-serif;
-  background: #333;
+  filter: "url(#solid)";
   @media(max-width: 500px) {
     font-size: 4px;
   }
@@ -67,7 +67,6 @@ export default class Point extends React.Component<PointProps, any> {
 
   componentDidMount = () => {
     if (this.tagRef.current) {
-      console.log(this.tagRef.current.getBBox().width)
       this.setState({textBoxWidth: this.tagRef.current.getBBox().width})
     }
     

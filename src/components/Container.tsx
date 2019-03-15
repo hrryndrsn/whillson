@@ -145,14 +145,23 @@ class Container extends Component<{}, ContainerState> {
       } else {
         this.getPointOnPath(ref, 0.5);
       }
-
-      // to do check for local storage state
+      // find any stored data in localStorage
+      let tryGetStoredData = localStorage.getItem("points");
+      if (tryGetStoredData) {
+        //we found a coded json string
+        let dc = JSON.parse(tryGetStoredData);
+        console.log(dc);
+        this.setState({ points: dc });
+      } else {
+        // there is no saved state. Let points array remain empty
+      }
     });
 
     window.addEventListener("touchstart", (e: any) => {
       let newId: number;
       if (e.target.id) {
         if (
+          // check if the target of the touch as a known element.
           e.target.id === "inputField" || // is the name input field
           e.target.id === "floatingBoxContainer" || // is the editor bg
           e.target.id === "formWrapper" || // is the editor bg
@@ -209,6 +218,7 @@ class Container extends Component<{}, ContainerState> {
           this.setState({
             points: pointsList
           });
+          console.log(this.state.points);
         }
       }
 
@@ -252,9 +262,14 @@ class Container extends Component<{}, ContainerState> {
           pointsList[id].x = pt.x;
           pointsList[id].y = pt.y;
 
-          this.setState({
-            points: pointsList
-          });
+          this.setState(
+            {
+              points: pointsList
+            },
+            () =>
+              // update the current positions in local sotrage
+              localStorage.setItem("points", JSON.stringify(this.state.points))
+          );
         }
       }
 
@@ -296,19 +311,28 @@ class Container extends Component<{}, ContainerState> {
     const newPoint = this.pointOnCrv(e.pageX / window.innerWidth);
     const ptId = this.state.points.length;
     //add point
-    this.setState({
-      points: [
-        ...this.state.points,
-        {
-          x: newPoint.x,
-          y: newPoint.y,
-          tag: generateRandom(adjectives, hillWords),
-          color: this.getRandomColor(),
-          tagPlacement: 0
-        }
-      ],
-      selectedPoint: ptId
-    });
+    this.setState(
+      {
+        points: [
+          ...this.state.points,
+          {
+            x: newPoint.x,
+            y: newPoint.y,
+            tag: generateRandom(adjectives, hillWords),
+            color: this.getRandomColor(),
+            tagPlacement: 0
+          }
+        ],
+        selectedPoint: ptId
+      },
+      () => {
+        //fire stuff in a callback to make sure state is correct
+        //prevent off by 1 erros
+        //TODO - Save state to local host.
+        localStorage.setItem("points", JSON.stringify(this.state.points));
+        console.log("state packet", this.state.points);
+      }
+    );
   };
 
   pointOnCrv(pct: number): { x: number; y: number } {
@@ -377,9 +401,14 @@ class Container extends Component<{}, ContainerState> {
       let ptList: Pt[] = this.state.points.slice();
       ptList[this.state.selectedPoint].tag = e.currentTarget.value;
       console.log(ptList);
-      this.setState({
-        points: ptList
-      });
+      this.setState(
+        {
+          points: ptList
+        },
+        () => {
+          localStorage.setItem("points", JSON.stringify(this.state.points));
+        }
+      );
     } else return;
   };
 
@@ -420,7 +449,9 @@ class Container extends Component<{}, ContainerState> {
       let pointList = this.state.points;
       let selectedPt = this.state.selectedPoint;
       pointList[selectedPt].tagPlacement = newPos;
-      this.setState({ points: pointList });
+      this.setState({ points: pointList }, () => {
+        localStorage.setItem("points", JSON.stringify(this.state.points));
+      });
     }
   };
 
@@ -429,7 +460,9 @@ class Container extends Component<{}, ContainerState> {
       let pointList = this.state.points;
       let selectedPt = this.state.selectedPoint;
       pointList.splice(selectedPt, 1);
-      this.setState({ points: pointList, selectedPoint: -1 });
+      this.setState({ points: pointList, selectedPoint: -1 }, () => {
+        localStorage.setItem("points", JSON.stringify(this.state.points));
+      });
     }
   };
 
@@ -444,7 +477,7 @@ class Container extends Component<{}, ContainerState> {
         onMouseUp={this.handleMouseUp}
       >
         <SvgWrapper
-          width="100%"
+          width="100%%"
           height="50%"
           viewBox={`0 0 100 50`}
           fill="none"
