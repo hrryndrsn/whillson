@@ -40,7 +40,6 @@ const Tag = styled.text`
   pointer-events: none;
   font-size: 2px;
   font-family: sans-serif;
-  filter: "url(#solid)";
   @media(max-width: 500px) {
     font-size: 4px;
   }
