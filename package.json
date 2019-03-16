@@ -9,6 +9,8 @@
     "@types/react": "16.7.20",
     "@types/react-dom": "16.0.11",
     "@types/styled-components": "^4.1.6",
+    "firebase": "^5.9.0",
+    "firebaseui": "^3.5.2",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "react-scripts": "2.1.3",

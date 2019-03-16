@@ -150,7 +150,6 @@ class Container extends Component<{}, ContainerState> {
       if (tryGetStoredData) {
         //we found a coded json string
         let dc = JSON.parse(tryGetStoredData);
-        console.log(dc);
         this.setState({ points: dc });
       } else {
         // there is no saved state. Let points array remain empty
@@ -330,7 +329,6 @@ class Container extends Component<{}, ContainerState> {
         //prevent off by 1 erros
         //TODO - Save state to local host.
         localStorage.setItem("points", JSON.stringify(this.state.points));
-        console.log("state packet", this.state.points);
       }
     );
   };
@@ -477,7 +475,7 @@ class Container extends Component<{}, ContainerState> {
         onMouseUp={this.handleMouseUp}
       >
         <SvgWrapper
-          width="100%%"
+          width="100%"
           height="50%"
           viewBox={`0 0 100 50`}
           fill="none"
