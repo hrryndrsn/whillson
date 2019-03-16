@@ -9,26 +9,39 @@ import * as firebaseui from "firebaseui";
 import firebaseApp, { auth, provider } from "../config/firebase";
 import { string } from "prop-types";
 
-interface Item {
+export interface UserSession {
   id: string;
-  title: string;
-  user: string;
+  displayName: string;
+  photoUrl: string;
+  Email: string;
+  hillCharts: HillChart[];
+}
+export interface HillChart {
+  id: string;
+  name: string;
+  points: Pt[];
+}
+
+export interface Pt {
+  x: number;
+  y: number;
+  tag: string;
+  color: string;
+  tagPlacement: number;
+}
+
+export interface AppState {
+  user: user;
+  session: UserSession;
 }
 
 type user = firebase.User | null;
 
-interface AppState {
-  currentItem: string;
-  username: string;
-  items: Item[];
-  user: user;
-}
-
 const anonUser = {
+  uid: "123",
   displayName: "anon user",
   email: "fake@email.com",
-  photoURL: "http://www.placepuppy.net/1p/400/250",
-  uid: "zordie"
+  photoURL: "http://www.placepuppy.net/1p/400/250"
 };
 
 class App extends Component {
@@ -41,44 +54,36 @@ class App extends Component {
   componentDidMount() {
     //persist login accross refresh
     auth.onAuthStateChanged(user => {
+      //check if there is a user cached.
       if (user) {
         this.setState({ user });
+        // - lookup the user up in the db and return a reference
+        const userRef = firebase
+          .database()
+          .ref(`/users/${this.state.user.uid}`);
+        userRef.on("value", snapshot => {
+          let newState = [];
+          if (snapshot) {
+            let items = snapshot.val(); //grab all values in the snapshot
+            for (let item in items) {
+              newState.push({
+                id: item,
+                title: items[item].title,
+                user: items[item].user
+              });
+            }
+          }
+          this.setState(
+            {
+              items: newState
+            },
+            () => {
+              console.log("loaded state from db->", this.state.items);
+            }
+          );
+        });
       }
     });
-    // -
-    const itemsRef = firebase.database().ref(`/users/${this.state.user.uid}`);
-    itemsRef.on("value", snapshot => {
-      console.log("snapshot", snapshot);
-      let newState = [];
-      if (snapshot) {
-        let items = snapshot.val(); //grab all values in the snapshot
-        for (let item in items) {
-          newState.push({
-            id: item,
-            title: items[item].title,
-            user: items[item].user
-          });
-        }
-      }
-      this.setState(
-        {
-          items: newState
-        },
-        () => {
-          console.log("loaded state from db->", this.state.items);
-        }
-      );
-    });
-  }
-  handleChange(e: React.FocusEvent<HTMLInputElement>) {
-    switch (e.target.name) {
-      case "username":
-        this.setState({ username: e.target.value });
-        break;
-      case "currentItem":
-        this.setState({ currentItem: e.target.value });
-        break;
-    }
   }
 
   handleSubmit = (e: React.FocusEvent<HTMLFormElement>) => {
@@ -134,44 +139,14 @@ class App extends Component {
   logIn() {
     auth.signInWithPopup(provider).then(result => {
       const user = result.user;
-      this.setState(
-        {
-          user
-        },
-        () => {
-          const itemsRef = firebase
-            .database()
-            .ref(`/users/${this.state.user.uid}`);
-          itemsRef.on("value", snapshot => {
-            console.log("snapshot", snapshot);
-            let newState = [];
-            if (snapshot) {
-              let items = snapshot.val(); //grab all values in the snapshot
-              for (let item in items) {
-                newState.push({
-                  id: item,
-                  title: items[item].title,
-                  user: items[item].user
-                });
-              }
-            }
-            this.setState(
-              {
-                items: newState
-              },
-              () => {
-                console.log("loaded state from db->", this.state.items);
-              }
-            );
-          });
-        }
-      );
+      this.setState({
+        user
+      });
+      const userRef = firebase.database().ref(`/users/${this.state.user.uid}`);
+      console.log(userRef);
     });
   }
   render() {
-    if (this.state.user) {
-      console.log(this.state.user.photoURL);
-    }
     return (
       <div className="App">
         <header>
@@ -194,49 +169,6 @@ class App extends Component {
               <div className="user-profile">
                 <img src={this.state.user.photoURL} />
               </div>
-            </div>
-            <div className="container">
-              <section className="add-item">
-                <form onSubmit={this.handleSubmit}>
-                  <input
-                    type="text"
-                    name="username"
-                    placeholder="What's your name?"
-                    onChange={this.handleChange.bind(this)}
-                    value={this.state.user.displayName || this.state.user.email}
-                  />
-                  <input
-                    type="text"
-                    name="currentItem"
-                    placeholder="What are you bringing?"
-                    onChange={this.handleChange.bind(this)}
-                    value={this.state.currentItem}
-                  />
-                  <button>Add Item</button>
-                </form>
-              </section>
-              <section className="display-item">
-                <div className="wrapper">
-                  <ul>
-                    {this.state.items.map((item: Item) => {
-                      return (
-                        <li key={item.id}>
-                          <h3>{item.title}</h3>
-                          <p>
-                            brought by: {item.user}
-                            {item.user === this.state.user.displayName ||
-                            item.user === this.state.user.email ? (
-                              <button onClick={() => this.removeItem(item.id)}>
-                                Remove Item
-                              </button>
-                            ) : null}
-                          </p>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              </section>
             </div>
           </div>
         )}
