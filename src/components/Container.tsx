@@ -6,6 +6,7 @@ import { pointColors } from "../constants/colors";
 import { adjectives, hillWords, generateRandom } from "../constants/words";
 
 import "../css/App.css";
+import { Pt } from "../constants/models";
 
 const ContainerWrapper = styled.div`
   margin: 0 auto;
@@ -87,14 +88,6 @@ const Annotation = styled.text`
   user-select: none;
 `;
 ////-----------------------------------------------------
-
-interface Pt {
-  x: number;
-  y: number;
-  tag: string;
-  color: string;
-  tagPlacement: number;
-}
 
 interface ContainerState {
   mouse: {

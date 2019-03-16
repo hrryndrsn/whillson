@@ -27,7 +27,8 @@ interface AppState {
 const anonUser = {
   displayName: "anon user",
   email: "fake@email.com",
-  photoURL: "http://www.placepuppy.net/1p/400/250"
+  photoURL: "http://www.placepuppy.net/1p/400/250",
+  uid: "zordie"
 };
 
 class App extends Component {
@@ -45,7 +46,7 @@ class App extends Component {
       }
     });
     // -
-    const itemsRef = firebaseApp.database().ref("items");
+    const itemsRef = firebase.database().ref(`/users/${this.state.user.uid}`);
     itemsRef.on("value", snapshot => {
       console.log("snapshot", snapshot);
       let newState = [];
@@ -82,12 +83,10 @@ class App extends Component {
 
   handleSubmit = (e: React.FocusEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // we need to carve out a space in our Firebase database where we'd
-    // like to store all of the items that people are bringing to the
-    // potluck. We do this by calling the ref method and passing in the
-    // destination we'd like them to be stored (items).
-    const itemsRef = firebaseApp.database().ref("items");
+    //find existing object called items and return the reference
+    const itemsRef = firebase.database().ref(`/users/${this.state.user.uid}`);
     // we grab the item the user typed in (as well as their username) from // he state, and package it into an object so we ship it off to our ///// Firebase database.
+    console.log("item ref", itemsRef);
     itemsRef.on("value", snapshot => {
       console.log("snapshot", snapshot);
       let newState = [];
@@ -97,18 +96,13 @@ class App extends Component {
           newState.push({
             id: item,
             title: items[item].title,
-            user: this.state.user.displayName 
+            user: this.state.user.displayName
           });
         }
       }
-      this.setState(
-        {
-          items: newState
-        },
-        () => {
-          console.log("state changed from snapshot ->", this.state.items);
-        }
-      );
+      this.setState({
+        items: newState
+      });
     });
     const item = {
       title: this.state.currentItem,
@@ -140,9 +134,38 @@ class App extends Component {
   logIn() {
     auth.signInWithPopup(provider).then(result => {
       const user = result.user;
-      this.setState({
-        user
-      });
+      this.setState(
+        {
+          user
+        },
+        () => {
+          const itemsRef = firebase
+            .database()
+            .ref(`/users/${this.state.user.uid}`);
+          itemsRef.on("value", snapshot => {
+            console.log("snapshot", snapshot);
+            let newState = [];
+            if (snapshot) {
+              let items = snapshot.val(); //grab all values in the snapshot
+              for (let item in items) {
+                newState.push({
+                  id: item,
+                  title: items[item].title,
+                  user: items[item].user
+                });
+              }
+            }
+            this.setState(
+              {
+                items: newState
+              },
+              () => {
+                console.log("loaded state from db->", this.state.items);
+              }
+            );
+          });
+        }
+      );
     });
   }
   render() {
