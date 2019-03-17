@@ -489,12 +489,12 @@ class Container extends Component<{}, ContainerState> {
             strokeWidth="0.5"
             strokeDasharray="1.2"
           />
-          <Annotation x={33} y={3}>
+          {/* <Annotation x={33} y={3}>
             ← Figuring it out
           </Annotation>
           <Annotation x={55} y={3}>
             Making it happen →
-          </Annotation>
+          </Annotation> */}
           <Hill
             d="M50 22C25 22 24.8264 48 0 48V52H100V48C75.1736 48 75 22 50 22Z"
             fill="#F2F2F2"

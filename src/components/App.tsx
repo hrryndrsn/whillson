@@ -1,11 +1,13 @@
 import React, { Component, FormEvent } from "react";
 import "../css/App.css";
 import Container from "./Container";
-import Nav from "./Nav";
+import Nav from "./NavWithLogin";
 import "firebase/auth";
 import "firebase/database";
 import * as firebase from "firebase";
 import firebaseApp, { auth, provider } from "../config/firebase";
+import styled from "styled-components";
+import NavWithLogin from "./NavWithLogin";
 //-----------------------------------------------------
 
 export interface Account {
@@ -35,6 +37,12 @@ export interface AppState {
 type user = firebase.User | null;
 
 // -----------------------------------------------
+const MainPage = styled.div`
+width: 100%;
+margin: 0 auto;
+height: 100%;
+`
+// -----------------------------------------------
 const anonUser = {
   uid: "123",
   displayName: "anon user",
@@ -52,6 +60,9 @@ class App extends Component<{}, {}> {
     account: loggedOutAccount
   };
   componentDidMount() {
+    document.addEventListener('resize', (e) => {
+      console.log(e)
+    })
     //persist login accross refresh
     auth.onAuthStateChanged(user => {
       //check if there is a user cached.
@@ -189,37 +200,18 @@ class App extends Component<{}, {}> {
   render() {
     return (
       <div className="App">
-        //Nav
-        <header>
-          <div className="wrapper">
-            <h1>Move Mountains</h1>
-            {this.state.user == anonUser ? (
-              <button onClick={this.logIn.bind(this)}>Log in</button>
-            ) : (
-              <button onClick={this.logOut.bind(this)}>Log out</button>
-            )}
-          </div>
-        </header>
-        //Main page
-        {this.state.user == anonUser ? (
-          ///
-          /// No logged in User
+        <NavWithLogin
+          isLoggedIn={this.state.user == anonUser}
+          user={this.state.user}
+          logOut={this.logOut.bind(this)}
+          logIn={this.logIn.bind(this)}
+        />
+        <MainPage>
           <div>
-            <p>You must be logged in to see the potluck tings</p>
+
+          <Container/>
           </div>
-        ) : (
-          //
-          // <user cmo>
-          <div>
-            <div className="user-profile">
-              <div className="user-profile">
-                <img src={this.state.user.photoURL} />
-                <p>{this.state.user.displayName}</p>
-                <p>{this.state.user.uid}</p>
-              </div>
-            </div>
-          </div>
-        )}
+        </MainPage>
       </div>
     );
   }
