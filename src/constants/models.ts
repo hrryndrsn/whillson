@@ -1,5 +1,28 @@
 
+export interface UserRecord {
+  id: string
+  displayName: string
+  photoUrl: string
+  Email: string
+  hillCharts: HillChart[]
+}
+export interface HillChart {
+  id :string
+  name: string
+  points: Pt[]
+}
 
+export interface Pt {
+  x: number;
+  y: number;
+  tag: string;
+  color: string;
+  tagPlacement: number;
+}
+
+export interface AppState  {
+  user: UserRecord
+}
 
 /*
 user comes in -> user == anon user
