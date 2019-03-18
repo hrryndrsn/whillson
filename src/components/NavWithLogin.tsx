@@ -7,6 +7,7 @@ import { Link, NavLink } from "react-router-dom";
 const NavWrapper = styled.div`
   margin: 0 auto;
   padding: 16px 8px;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -51,7 +52,7 @@ const LoggedInUserControlGroup = styled.div`
 const UserProfile = styled.div`
   display: grid;
   gap: 12px;
-  grid-template-columns: 40px 1fr;
+  grid-template-columns: 40px 100px;
   justify-content: center;
   align-content: center;
   margin-right: 12px;
@@ -66,10 +67,9 @@ const ProfilePhoto = styled.img`
 
 const LogInOutButton = styled.button`
   background: none;
-  box-shadow: none;
-  text-align: left;
+  box-shadow: none; 
+  width: 100%;
   color: black;
-  align-self: center;
   &:hover {
     color: limegreen;
   }
@@ -117,7 +117,6 @@ class NavWithLogin extends Component<NavProps, {}> {
               <UserProfile>
                 <ProfilePhoto src={this.props.user.photoURL} />
                 <div>
-                  <Username>{this.props.user.displayName}</Username>
                   <LogInOutButton onClick={this.props.logOut.bind(this)}>
                     Log out
                   </LogInOutButton>
