@@ -8,6 +8,9 @@ import * as firebase from "firebase";
 import firebaseApp, { auth, provider } from "../config/firebase";
 import styled from "styled-components";
 import NavWithLogin from "./NavWithLogin";
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import HillChartBrowser from "./HillchartBrowser";
+
 //-----------------------------------------------------
 
 export interface Account {
@@ -36,10 +39,10 @@ export interface AppState {
 
 // -----------------------------------------------
 const MainPage = styled.div`
-width: 100%;
-margin: 0 auto;
-height: 100%;
-`
+  width: 100%;
+  margin: 0 auto;
+  height: 100%;
+`;
 // -----------------------------------------------
 const anonUser = {
   uid: "123",
@@ -83,7 +86,6 @@ class App extends Component<{}, {}> {
       }
     });
   }
-
 
   //remove an item from the db
   removeItem(itemId: string) {
@@ -166,19 +168,21 @@ class App extends Component<{}, {}> {
 
   render() {
     return (
-      <div className="App">
-        <NavWithLogin
-          isLoggedIn={this.state.user == anonUser}
-          user={this.state.user}
-          logOut={this.logOut.bind(this)}
-          logIn={this.logIn.bind(this)}
-        />
-        <MainPage>
+      <Router>
+        <div className="App">
+          <NavWithLogin
+            isLoggedIn={this.state.user == anonUser}
+            user={this.state.user}
+            logOut={this.logOut.bind(this)}
+            logIn={this.logIn.bind(this)}
+          />
           
-          <Container/>
-          
-        </MainPage>
-      </div>
+          <MainPage>
+            <Route path="/" exact component={Container} />
+            <Route path="/browse" exact component={HillChartBrowser} />
+          </MainPage>
+        </div>
+      </Router>
     );
   }
 }

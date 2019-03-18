@@ -1,18 +1,26 @@
-import React, { Component } from 'react';
-import styled from 'styled-components';
+import React, { Component } from "react";
+import styled from "styled-components";
 
 import "../css/App.css";
+import { Link, NavLink } from "react-router-dom";
 
 const NavWrapper = styled.div`
   margin: 0 auto;
   padding: 16px 8px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
   height: 50px;
   position: absolute;
   top: 0;
   right: 0;
   left: 0;
+  a {
+    text-decoration: none;
+    &:hover {
+      color: pink;
+    }
+  }
   h2 {
     align-self: center;
     font-weight: bold;
@@ -21,17 +29,22 @@ const NavWrapper = styled.div`
 `;
 const AccountControlGroup = styled.div`
   display: grid;
-  grid-template-columns:
-    1fr
-    button {
+  gap: 24px;
+  grid-template-columns: 1fr 1fr;
+  button {
     padding: 0;
+  }
+  a {
+    justify-self: right;
+    align-self: center;
+    color: #000;
+    font-size: none;
   }
 `;
 
 const LoggedInUserControlGroup = styled.div`
   display: grid;
-  grid-template-areas: 
-    "a b";
+  grid-template-areas: "a b";
   align-content: center;
 `;
 
@@ -69,42 +82,51 @@ const Username = styled.p`
   margin: 0;
 `;
 
-interface NavProps {
-  isLoggedIn: boolean
-  user: any
-  logOut: () => void
-  logIn: () => void
-}
+const SiteTitle = styled.h2`
+  color: #bbb;
+  text-decoration: none;
+  vertical-align: center;
+  align-self: center;
+  justify-self: center;
+`;
 
+interface NavProps {
+  isLoggedIn: boolean;
+  user: any;
+  logOut: () => void;
+  logIn: () => void;
+}
 
 class NavWithLogin extends Component<NavProps, {}> {
   render() {
     return (
-      
       <NavWrapper>
-      <h2>Move Mountains</h2>
-      {this.props.isLoggedIn ? (
-        <AccountControlGroup>
-          <LogInOutButton onClick={this.props.logIn.bind(this)}>
-            Log in
-          </LogInOutButton>
-        </AccountControlGroup>
-      ) : (
-        <AccountControlGroup>
-          <LoggedInUserControlGroup>
-            <UserProfile>
-              <ProfilePhoto src={this.props.user.photoURL} />
-              <div>
-              <Username>{this.props.user.displayName}</Username>
-              <LogInOutButton onClick={this.props.logOut.bind(this)}>
-                Log out
-              </LogInOutButton>
-              </div>
-            </UserProfile>
-          </LoggedInUserControlGroup>
-        </AccountControlGroup>
-      )}
-    </NavWrapper>
+        <NavLink to="/">
+          <SiteTitle>Move Mountains</SiteTitle>
+        </NavLink>
+        {this.props.isLoggedIn ? (
+          <AccountControlGroup>
+            <LogInOutButton onClick={this.props.logIn.bind(this)}>
+              Log in
+            </LogInOutButton>
+          </AccountControlGroup>
+        ) : (
+          <AccountControlGroup>
+            <NavLink to={"/browse"}>Browse hills</NavLink>
+            <LoggedInUserControlGroup>
+              <UserProfile>
+                <ProfilePhoto src={this.props.user.photoURL} />
+                <div>
+                  <Username>{this.props.user.displayName}</Username>
+                  <LogInOutButton onClick={this.props.logOut.bind(this)}>
+                    Log out
+                  </LogInOutButton>
+                </div>
+              </UserProfile>
+            </LoggedInUserControlGroup>
+          </AccountControlGroup>
+        )}
+      </NavWrapper>
     );
   }
 }
