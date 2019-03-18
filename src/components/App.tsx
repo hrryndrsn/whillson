@@ -30,11 +30,9 @@ export interface Pt {
 }
 
 export interface AppState {
-  user: user;
-  account: Account;
+  user: firebase.User | null; // the currently logged in user
+  account: Account; // an object which stores the user's hillcharts against the user.uui
 }
-
-type user = firebase.User | null;
 
 // -----------------------------------------------
 const MainPage = styled.div`
@@ -60,13 +58,10 @@ class App extends Component<{}, {}> {
     account: loggedOutAccount
   };
   componentDidMount() {
-    document.addEventListener('resize', (e) => {
-      console.log(e)
-    })
     //persist login accross refresh
     auth.onAuthStateChanged(user => {
-      //check if there is a user cached.
       if (user) {
+        //non null value for user has been passed
         this.setState({ user });
         // - lookup the user up in the db and return a reference
         const userRef = firebase
@@ -75,11 +70,12 @@ class App extends Component<{}, {}> {
         // read the value of the user ref and update account state.
         userRef.once("value", snapshot => {
           if (snapshot.val()) {
-            let newState = snapshot.val();
+            // there is a value, update the account infomation to the stored one.
+            let val = snapshot.val();
             this.setState({
               account: {
-                uid: newState.object.uid,
-                hillCharts: newState.object.hillCharts
+                uid: val.object.uid,
+                hillCharts: val.object.hillCharts
               }
             });
           }
@@ -88,38 +84,7 @@ class App extends Component<{}, {}> {
     });
   }
 
-  handleSubmit = (e: React.FocusEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    //find existing object called items and return the reference
-    const itemsRef = firebase.database().ref(`/users/${this.state.user.uid}`);
-    // we grab the item the user typed in (as well as their username) from // he state, and package it into an object so we ship it off to our ///// Firebase database.
-    console.log("item ref", itemsRef);
-    itemsRef.on("value", snapshot => {
-      console.log("snapshot", snapshot);
-      let newState = [];
-      if (snapshot) {
-        let items = snapshot.val(); //grab all values in the snapshot
-        for (let item in items) {
-          newState.push({
-            id: item,
-            title: items[item].title,
-            user: this.state.user.displayName
-          });
-        }
-      }
-      this.setState({
-        items: newState
-      });
-    });
-    const item = {};
-    // similar to the Array.push method, this sends a copy of our object  /// so that it can be stored in Firebase.
-    itemsRef.push(item);
-    //reset the form values and state.
-    this.setState({
-      currentItem: "",
-      username: ""
-    });
-  };
+
   //remove an item from the db
   removeItem(itemId: string) {
     // find the id in the db and return a reference
@@ -180,6 +145,7 @@ class App extends Component<{}, {}> {
       );
     });
   }
+
   setDBEntry = async (path: string, object: any) => {
     await firebase
       .database()
@@ -188,6 +154,7 @@ class App extends Component<{}, {}> {
         object
       }); // returns nothing
   };
+
   findDBEntry = async (path: string) => {
     const datasnapshot = await firebase
       .database()
@@ -207,10 +174,9 @@ class App extends Component<{}, {}> {
           logIn={this.logIn.bind(this)}
         />
         <MainPage>
-          <div>
-
+          
           <Container/>
-          </div>
+          
         </MainPage>
       </div>
     );
