@@ -6,6 +6,7 @@ import { pointColors } from "../constants/colors";
 import { adjectives, hillWords, generateRandom } from "../constants/words";
 
 import "../css/App.css";
+import { Pt } from "../constants/models";
 
 const ContainerWrapper = styled.div`
   margin: 0 auto;
@@ -88,14 +89,6 @@ const Annotation = styled.text`
 `;
 ////-----------------------------------------------------
 
-interface Pt {
-  x: number;
-  y: number;
-  tag: string;
-  color: string;
-  tagPlacement: number;
-}
-
 interface ContainerState {
   mouse: {
     x: number;
@@ -150,7 +143,6 @@ class Container extends Component<{}, ContainerState> {
       if (tryGetStoredData) {
         //we found a coded json string
         let dc = JSON.parse(tryGetStoredData);
-        console.log(dc);
         this.setState({ points: dc });
       } else {
         // there is no saved state. Let points array remain empty
@@ -330,7 +322,6 @@ class Container extends Component<{}, ContainerState> {
         //prevent off by 1 erros
         //TODO - Save state to local host.
         localStorage.setItem("points", JSON.stringify(this.state.points));
-        console.log("state packet", this.state.points);
       }
     );
   };
@@ -477,7 +468,7 @@ class Container extends Component<{}, ContainerState> {
         onMouseUp={this.handleMouseUp}
       >
         <SvgWrapper
-          width="100%%"
+          width="100%"
           height="50%"
           viewBox={`0 0 100 50`}
           fill="none"
@@ -498,12 +489,6 @@ class Container extends Component<{}, ContainerState> {
             strokeWidth="0.5"
             strokeDasharray="1.2"
           />
-          <Annotation x={33} y={3}>
-            ← Figuring it out
-          </Annotation>
-          <Annotation x={55} y={3}>
-            Making it happen →
-          </Annotation>
           <Hill
             d="M50 22C25 22 24.8264 48 0 48V52H100V48C75.1736 48 75 22 50 22Z"
             fill="#F2F2F2"
