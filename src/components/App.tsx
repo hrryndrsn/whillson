@@ -4,11 +4,11 @@ import Container from "./Container";
 import Nav from "./NavWithLogin";
 import "firebase/auth";
 import "firebase/database";
-import * as firebase from "firebase";
-import firebaseApp, { auth, provider } from "../config/firebase";
+// import * as firebase from "firebase";
+import firebase, { auth, provider } from "../config/firebase";
 import styled from "styled-components";
 import NavWithLogin from "./NavWithLogin";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, RouteComponentProps } from "react-router-dom";
 import HillChartBrowser from "./HillchartBrowser";
 
 //-----------------------------------------------------
@@ -157,7 +157,7 @@ class App extends Component<{}, {}> {
       }); // returns nothing
   };
 
-  findDBEntry = async (path: string) => {
+   FindDBEntry = async (path: string) => {
     const datasnapshot = await firebase
       .database()
       .ref(path)
@@ -179,7 +179,8 @@ class App extends Component<{}, {}> {
           
           <MainPage>
             <Route path="/" exact component={Container} />
-            <Route path="/browse" exact component={HillChartBrowser} />
+            <Route path="/hills" exact component={HillChartBrowser} />
+            <Route path="/hills/:id" component={Container} findDbEntry={this.FindDBEntry} />
           </MainPage>
         </div>
       </Router>

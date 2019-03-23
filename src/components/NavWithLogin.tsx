@@ -112,7 +112,7 @@ class NavWithLogin extends Component<NavProps, {}> {
           </AccountControlGroup>
         ) : (
           <AccountControlGroup>
-            <NavLink to={"/browse"}>Browse hills</NavLink>
+            <NavLink to={"/hills"}>Browse hills</NavLink>
             <LoggedInUserControlGroup>
               <UserProfile>
                 <ProfilePhoto src={this.props.user.photoURL} />

@@ -16,12 +16,13 @@ const PageHeader = styled.h3``
 const HillChartGrid = styled.div`
 display: grid;
 gap: 16px;
-grid-template-areas: "a b c"
+grid-template-columns: 1fr 1fr ;
 `
 const GridCell = styled.div`
   height: 200px;
   background: white;
   border: 1px solid #ccc;
+  gap: 16px;
   border-radius: 5px;
 `
 
@@ -40,17 +41,26 @@ interface HillChartBrowserProps {
 
 
 class HillChartBrowser extends Component<HillChartBrowserProps, {}> {
-  render() {
+  makeid(length: number): string {
+    var text: string = "";
+    var possible: string = "abcdefghijklmnopqrstuvwxyz0123456789";
+    for (var i = 0; i < length; i++)
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    return text;
+  }
+  
+  
+  render() { 
     return (
       <Container>
         <PageHeader>Hills</PageHeader>
-
         <HillChartGrid>
           <GridCell/>
           <GridCell/>
           <GridCell/>
           <GridCell/>
-          <Link to="/new">
+          <GridCell/>
+          <Link to={"/hills/" + this.makeid(16)}>
           <AddNewButtonGridCell>New</AddNewButtonGridCell>
           </Link>
           

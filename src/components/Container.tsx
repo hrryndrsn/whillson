@@ -7,6 +7,7 @@ import { adjectives, hillWords, generateRandom } from "../constants/words";
 
 import "../css/App.css";
 import { Pt } from "../constants/models";
+import { RouteComponentProps } from "react-router-dom";
 
 const ContainerWrapper = styled.div`
   margin: 0 auto;
@@ -98,6 +99,7 @@ interface ContainerState {
     x: number;
     y: number;
   };
+  mounted: boolean;
   mouseXPercent: number;
   tapPathActive: boolean;
   points: Pt[];
@@ -109,7 +111,19 @@ interface ContainerState {
 
 /////---------------------------------------------------------
 
-class Container extends Component<{}, ContainerState> {
+
+
+interface MatchParams {
+  id: any;
+  name: string;
+}
+
+
+
+/////---------------------------------------------------------
+
+
+class Container extends Component<{}, {}> {
   state: ContainerState = {
     mouse: {
       x: 0,
@@ -119,6 +133,7 @@ class Container extends Component<{}, ContainerState> {
       x: 0,
       y: 0
     },
+    mounted: false,
     mouseXPercent: 0,
     tapPathActive: false,
     points: [],
@@ -131,12 +146,14 @@ class Container extends Component<{}, ContainerState> {
   pathRef = React.createRef<SVGPathElement>();
 
   componentDidMount = () => {
+    this.state.mounted = true;  
     window.addEventListener("load", e => {
-      const ref = this.pathRef.current;
-      if (!ref) {
-        return;
-      } else {
-        this.getPointOnPath(ref, 0.5);
+      if (this.state.mounted) {
+        const ref = this.pathRef.current;
+        if (!ref) {
+          return;
+        } else {
+          this.getPointOnPath(ref, 0.5);
       }
       // find any stored data in localStorage
       let tryGetStoredData = localStorage.getItem("points");
@@ -147,6 +164,16 @@ class Container extends Component<{}, ContainerState> {
       } else {
         // there is no saved state. Let points array remain empty
       }
+      // // find any stored data in localStorage
+      // let tryGetStoredDataFromDB = 
+      // if (tryGetStoredData) {
+      //   //we found a coded json string
+      //   let dc = JSON.parse(tryGetStoredData);
+      //   this.setState({ points: dc });
+      // } else {
+      //   // there is no saved state. Let points array remain empty
+      // }
+    }
     });
 
     window.addEventListener("touchstart", (e: any) => {
@@ -340,7 +367,6 @@ class Container extends Component<{}, ContainerState> {
       crds = defRef.getPointAtLength(relPct);
       return crds;
     } else {
-      console.log("ref not defined");
       crds = { x: 0, y: 0 };
       return crds;
     }
@@ -460,6 +486,9 @@ class Container extends Component<{}, ContainerState> {
   toggleFocusInput = () => {
     this.setState({ inputFocused: !this.state.inputFocused });
   };
+
+  componentWillUnmount = () => {
+  }
 
   render() {
     return (
