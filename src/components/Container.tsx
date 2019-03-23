@@ -9,6 +9,7 @@ import "../css/App.css";
 import { Pt } from "../constants/models";
 import { RouteComponentProps } from "react-router-dom";
 import { Account } from "./App";
+import { threadId } from "worker_threads";
 
 const ContainerWrapper = styled.div`
   margin: 0 auto;
@@ -108,6 +109,7 @@ interface ContainerState {
   draggedPoint: number;
   selectedPoint: number;
   inputFocused: boolean;
+  activeHillChart: string | null;
 }
 
 /////---------------------------------------------------------
@@ -125,8 +127,9 @@ interface MatchParams {
 
 interface containerProps {
   match ?: MatchParams // get the match param but not the rest of the route params
-  findDbEntry : (path: string) => Promise<any>
+  SetDBEntry : (path: string) => Promise<any>
   currentAccount: Account
+  currentUser: firebase.User
 }
 
 /////---------------------------------------------------------
@@ -149,7 +152,8 @@ class Container extends Component<containerProps, {}> {
     isDragging: false,
     draggedPoint: -1, //the point being dragged
     selectedPoint: -1, //the point which has been clicked
-    inputFocused: false
+    inputFocused: false,
+    activeHillChart: null,
   };
 
   pathRef = React.createRef<SVGPathElement>();
@@ -157,15 +161,17 @@ class Container extends Component<containerProps, {}> {
 
   handleLoad = (e: Event) => {
     if (this.state.mounted) {
+      if (this.props.currentUser) {
+        console.log('user detected')
+      } else {
+        console.log("user is null")
+      }
       const ref = this.pathRef.current;
       if (!ref) {
         return;
       } else {
         this.getPointOnPath(ref, 0.5);
     }
-    //Check if we have loaded on a specific url 
-    console.log(this.props)
-
   }
   }
   handleTouchStart = (e: any) => {
@@ -284,17 +290,27 @@ class Container extends Component<containerProps, {}> {
     });
   }
 
-    componentDidMount = () => {
-      this.state.mounted = true;  
+  componentDidMount = () => {
+    this.state.mounted = true;  
+    //Check if we have loaded on a specific url 
+    if (this.props.match) {
+      if (this.props.match.params.id) {
+        //we have id to a new or exisitng hill 
+        console.log('hill id:',this.props.match.params.id)
+        this.setState({activeHillChart: this.props.match.params.id}, () => console.log(this.state)) 
+      } else {
+        //we dont have a specic hill id
+        console.log("sanbox")
+      };
+    } 
     //register handlers, make sure to cancel them in componentDidUnmount
     window.addEventListener("load", this.handleLoad);
     window.addEventListener("touchstart", this.handleTouchStart);
     window.addEventListener("mousemove", this.handleMouseMove);
     window.addEventListener("keydown", this.handleKeyDown);
     window.addEventListener("touchmove", this.handleTouchMove);
-    }
-  ;
-
+  }
+  
   getPointOnPath = (ref: SVGPathElement, pct: number) => {
     const curveLen = ref.getTotalLength();
     const point = ref.getPointAtLength(curveLen * pct);

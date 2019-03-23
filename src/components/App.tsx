@@ -8,7 +8,12 @@ import "firebase/database";
 import firebase, { auth, provider } from "../config/firebase";
 import styled from "styled-components";
 import NavWithLogin from "./NavWithLogin";
-import { BrowserRouter as Router, Route, Link, RouteComponentProps } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  RouteComponentProps
+} from "react-router-dom";
 import HillChartBrowser from "./HillchartBrowser";
 
 //-----------------------------------------------------
@@ -83,6 +88,8 @@ class App extends Component<{}, {}> {
             });
           }
         });
+      } else {
+      console.log('no user')
       }
     });
   }
@@ -125,8 +132,9 @@ class App extends Component<{}, {}> {
                 // there is an existing user account
                 console.log("user found in db ->", snapshot.val());
                 const data = snapshot.val();
+                console.log(data.object);
                 this.setState({
-                  account: data.object
+                  account: { ...data.object }
                 });
               } else {
                 // there is no user account
@@ -157,7 +165,7 @@ class App extends Component<{}, {}> {
       }); // returns nothing
   };
 
-   FindDBEntry = async (path: string) => {
+  FindDBEntry = async (path: string) => {
     const datasnapshot = await firebase
       .database()
       .ref(path)
@@ -176,11 +184,22 @@ class App extends Component<{}, {}> {
             logOut={this.logOut.bind(this)}
             logIn={this.logIn.bind(this)}
           />
-          
+
           <MainPage>
             <Route path="/" exact component={Container} />
             <Route path="/hills" exact component={HillChartBrowser} />
-            <Route path="/hills/:id" component={(props: any) => <Container {...props} findDbEntry={this.FindDBEntry} currentAccount={this.state.account}/>}  />
+            <Route
+              path="/hills/:id"
+              component={(props: any) => (
+                <Container
+                  {...props}
+                  findDbEntry={this.FindDBEntry}
+                  SetDBEntry={this.setDBEntry}
+                  currentAccount={this.state.account}
+                  currentUser={this.state.user}
+                />
+              )}
+            />
           </MainPage>
         </div>
       </Router>
