@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, TouchEventHandler } from "react";
 import styled from "styled-components";
 import Point from "./Point";
 import FloatingBox from "./FloatingBox";
@@ -8,6 +8,7 @@ import { adjectives, hillWords, generateRandom } from "../constants/words";
 import "../css/App.css";
 import { Pt } from "../constants/models";
 import { RouteComponentProps } from "react-router-dom";
+import { Account } from "./App";
 
 const ContainerWrapper = styled.div`
   margin: 0 auto;
@@ -33,7 +34,7 @@ const TapPath = styled.path`
     stroke-width: 1;
   }
 `;
-//the actuall hover target
+//the actual hover target
 const FakeTapPath = styled.path`
   opacity: 0;
   stroke-width: 4;
@@ -115,15 +116,23 @@ interface ContainerState {
 
 interface MatchParams {
   id: any;
-  name: string;
+  isExact: boolean;
+  params: {
+    id: string
+  }
+  url: string;
 }
 
-
+interface containerProps {
+  match ?: MatchParams // get the match param but not the rest of the route params
+  findDbEntry : (path: string) => Promise<any>
+  currentAccount: Account
+}
 
 /////---------------------------------------------------------
 
 
-class Container extends Component<{}, {}> {
+class Container extends Component<containerProps, {}> {
   state: ContainerState = {
     mouse: {
       x: 0,
@@ -145,163 +154,146 @@ class Container extends Component<{}, {}> {
 
   pathRef = React.createRef<SVGPathElement>();
 
-  componentDidMount = () => {
-    this.state.mounted = true;  
-    window.addEventListener("load", e => {
-      if (this.state.mounted) {
-        const ref = this.pathRef.current;
-        if (!ref) {
-          return;
-        } else {
-          this.getPointOnPath(ref, 0.5);
-      }
-      // find any stored data in localStorage
-      let tryGetStoredData = localStorage.getItem("points");
-      if (tryGetStoredData) {
-        //we found a coded json string
-        let dc = JSON.parse(tryGetStoredData);
-        this.setState({ points: dc });
-      } else {
-        // there is no saved state. Let points array remain empty
-      }
-      // // find any stored data in localStorage
-      // let tryGetStoredDataFromDB = 
-      // if (tryGetStoredData) {
-      //   //we found a coded json string
-      //   let dc = JSON.parse(tryGetStoredData);
-      //   this.setState({ points: dc });
-      // } else {
-      //   // there is no saved state. Let points array remain empty
-      // }
-    }
-    });
 
-    window.addEventListener("touchstart", (e: any) => {
-      let newId: number;
-      if (e.target.id) {
-        if (
-          // check if the target of the touch as a known element.
-          e.target.id === "inputField" || // is the name input field
-          e.target.id === "floatingBoxContainer" || // is the editor bg
-          e.target.id === "formWrapper" || // is the editor bg
-          e.target.id.charAt(0) === "#" || //is a color block
-          e.target.id.charAt(0) === "c" //is position control
-        ) {
-          // mouse down over a 'secondary element'
-          return;
-        }
-        newId = parseInt(e.target.id);
-        this.setState({
-          isDragging: true,
-          draggedPoint: newId,
-          selectedPoint: newId
-        });
+  handleLoad = (e: Event) => {
+    if (this.state.mounted) {
+      const ref = this.pathRef.current;
+      if (!ref) {
+        return;
       } else {
-        //no id, no element we care about is the target
-        this.setState({
-          isDragging: true,
-          draggedPoint: -1,
-          selectedPoint: -1,
-          inputFocused: false
-        });
+        this.getPointOnPath(ref, 0.5);
+    }
+    //Check if we have loaded on a specific url 
+    console.log(this.props)
+
+  }
+  }
+  handleTouchStart = (e: any) => {
+    let newId: number;
+    if (e.target.id) {
+      if (
+        // check if the target of the touch as a known element.
+        e.target.id === "inputField" || // is the name input field
+        e.target.id === "floatingBoxContainer" || // is the editor bg
+        e.target.id === "formWrapper" || // is the editor bg
+        e.target.id.charAt(0) === "#" || //is a color block
+        e.target.id.charAt(0) === "c" //is position control
+      ) {
+        // mouse down over a 'secondary element'
         return;
       }
-    });
+      newId = parseInt(e.target.id);
+      this.setState({
+        isDragging: true,
+        draggedPoint: newId,
+        selectedPoint: newId
+      });
+    } else {
+      //no id, no element we care about is the target
+      this.setState({
+        isDragging: true,
+        draggedPoint: -1,
+        selectedPoint: -1,
+        inputFocused: false
+      });
+      return;
+    }
+  }
+  handleTouchMove = (e: any) => {
+    const tx = e.changedTouches[0].pageX,
+    ty = e.changedTouches[0].pageY,
+    xPct = tx / window.innerWidth,
+    path = this.pathRef.current;
+  let point;
+  if (path) {
+    let tryPoint = path.getPointAtLength(xPct);
+    if (tryPoint !== undefined) {
+      point = tryPoint;
+    }
+  }
+  //call pointOnCrv function
+  const pt = this.pointOnCrv(tx / window.innerWidth);
+  if (this.state.isDragging) {
+    if (this.state.selectedPoint !== -1) {
+      // create a new point and add it to the graph
+      let id = this.state.selectedPoint;
+      let pointsList: Pt[] = this.state.points;
+      pointsList[id].x = pt.x;
+      pointsList[id].y = pt.y;
 
-    window.addEventListener("touchmove", (e: any) => {
-      // console.log("move x:", e.changedTouches[0].pageX)
-      // console.log("move y:", e.changedTouches[0].pageY)
+      this.setState({
+        points: pointsList
+      });
+      console.log(this.state.points);
+    }
+  }
 
-      const tx = e.changedTouches[0].pageX,
-        ty = e.changedTouches[0].pageY,
-        xPct = tx / window.innerWidth,
-        path = this.pathRef.current;
-      let point;
-      if (path) {
-        let tryPoint = path.getPointAtLength(xPct);
-        if (tryPoint !== undefined) {
-          point = tryPoint;
-        }
+  this.setState({
+    mouse: { x: tx, y: ty },
+    mouseXPercent: tx / window.innerWidth,
+    mousePoseOnLine: {
+      x: pt.x,
+      y: pt.y
+    }
+  });
+  }
+
+  handleKeyDown = (e: KeyboardEvent) => {
+    if (e.keyCode === 8 && this.state.selectedPoint !== -1) {
+      this.handleDeletePoint();
+    }
+  }
+  handleMouseMove = (e: MouseEvent) => {
+    const xPct = e.x / window.innerWidth,
+      path = this.pathRef.current;
+    let point;
+    if (path) {
+      let tryPoint = path.getPointAtLength(xPct);
+      if (tryPoint !== undefined) {
+        point = tryPoint;
       }
-      //call pointOnCrv function
-      const pt = this.pointOnCrv(tx / window.innerWidth);
+    }
+    //call pointOnCrv function
+    const pt = this.pointOnCrv(e.x / window.innerWidth);
 
-      if (this.state.isDragging) {
-        if (this.state.selectedPoint !== -1) {
-          // create a new point and add it to the graph
-          let id = this.state.selectedPoint;
-          let pointsList: Pt[] = this.state.points;
-          pointsList[id].x = pt.x;
-          pointsList[id].y = pt.y;
+    if (this.state.isDragging) {
+      if (this.state.selectedPoint !== -1) {
+        let id = this.state.selectedPoint;
+        let pointsList: Pt[] = this.state.points;
+        pointsList[id].x = pt.x;
+        pointsList[id].y = pt.y;
 
-          this.setState({
+        this.setState(
+          {
             points: pointsList
-          });
-          console.log(this.state.points);
-        }
+          },
+          () =>
+            // update the current positions in local sotrage
+            localStorage.setItem("points", JSON.stringify(this.state.points))
+        );
       }
+    }
 
-      this.setState({
-        mouse: { x: tx, y: ty },
-        mouseXPercent: tx / window.innerWidth,
-        mousePoseOnLine: {
-          x: pt.x,
-          y: pt.y
-        }
-      });
-    });
-
-    window.addEventListener("touchend", (e: any) => {
-      console.log("End", e);
-    });
-
-    window.addEventListener("keydown", (e: KeyboardEvent) => {
-      if (e.keyCode === 8 && this.state.selectedPoint !== -1) {
-        this.handleDeletePoint();
+    this.setState({
+      mouse: { x: e.x, y: e.y },
+      mouseXPercent: e.x / window.innerWidth,
+      mousePoseOnLine: {
+        x: pt.x,
+        y: pt.y
       }
     });
+  }
 
-    window.addEventListener("mousemove", (e: MouseEvent) => {
-      const xPct = e.x / window.innerWidth,
-        path = this.pathRef.current;
-      let point;
-      if (path) {
-        let tryPoint = path.getPointAtLength(xPct);
-        if (tryPoint !== undefined) {
-          point = tryPoint;
-        }
-      }
-      //call pointOnCrv function
-      const pt = this.pointOnCrv(e.x / window.innerWidth);
-
-      if (this.state.isDragging) {
-        if (this.state.selectedPoint !== -1) {
-          let id = this.state.selectedPoint;
-          let pointsList: Pt[] = this.state.points;
-          pointsList[id].x = pt.x;
-          pointsList[id].y = pt.y;
-
-          this.setState(
-            {
-              points: pointsList
-            },
-            () =>
-              // update the current positions in local sotrage
-              localStorage.setItem("points", JSON.stringify(this.state.points))
-          );
-        }
-      }
-
-      this.setState({
-        mouse: { x: e.x, y: e.y },
-        mouseXPercent: e.x / window.innerWidth,
-        mousePoseOnLine: {
-          x: pt.x,
-          y: pt.y
-        }
-      });
-    });
-  };
+    componentDidMount = () => {
+      this.state.mounted = true;  
+    //register handlers, make sure to cancel them in componentDidUnmount
+    window.addEventListener("load", this.handleLoad);
+    window.addEventListener("touchstart", this.handleTouchStart);
+    window.addEventListener("mousemove", this.handleMouseMove);
+    window.addEventListener("keydown", this.handleKeyDown);
+    window.addEventListener("touchmove", this.handleTouchMove);
+    }
+  ;
 
   getPointOnPath = (ref: SVGPathElement, pct: number) => {
     const curveLen = ref.getTotalLength();
@@ -488,6 +480,13 @@ class Container extends Component<{}, {}> {
   };
 
   componentWillUnmount = () => {
+    this.state.mounted = false;  
+    //unregister handlers 
+    window.removeEventListener("load", this.handleLoad);
+    window.removeEventListener("touchstart", this.handleTouchStart);
+    window.removeEventListener("mousemove", this.handleMouseMove);
+    window.removeEventListener("keydown", this.handleKeyDown);
+    window.removeEventListener("touchmove", this.handleTouchMove);
   }
 
   render() {

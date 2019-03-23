@@ -1,4 +1,4 @@
-import React, { Component, FormEvent } from "react";
+import React, { Component, FormEvent, ComponentPropsWithRef } from "react";
 import "../css/App.css";
 import Container from "./Container";
 import Nav from "./NavWithLogin";
@@ -180,7 +180,7 @@ class App extends Component<{}, {}> {
           <MainPage>
             <Route path="/" exact component={Container} />
             <Route path="/hills" exact component={HillChartBrowser} />
-            <Route path="/hills/:id" component={Container} findDbEntry={this.FindDBEntry} />
+            <Route path="/hills/:id" component={(props: any) => <Container {...props} findDbEntry={this.FindDBEntry} currentAccount={this.state.account}/>}  />
           </MainPage>
         </div>
       </Router>
