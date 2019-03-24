@@ -20,6 +20,12 @@ export interface Pt {
   tagPlacement: number;
 }
 
+
+export interface Account {
+  uid: string;
+  hillCharts: HillChart[];
+}
+
 export interface AppState  {
   user: UserRecord
 }
@@ -41,3 +47,20 @@ pages
 "/hillcharts" -> hillchart index page. show cards with the name of each (picture streach goal)
 "/hillcharts${id}" -> individual hill 
 */
+
+// const dbStructure = {
+//   accounts: {
+//     "238r20o8f290o": {
+//       hills: {
+//         "913hrh1i287y": {
+//           name: "my hillchart"
+//           points: {
+//             {
+//               //....
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// }

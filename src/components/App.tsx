@@ -15,16 +15,10 @@ import {
   RouteComponentProps
 } from "react-router-dom";
 import HillChartBrowser from "./HillchartBrowser";
-
+import { Account } from "../constants/models";
 //-----------------------------------------------------
 
-export interface Account {
-  uid: string;
-  hillCharts: HillChart[];
-}
-
 export interface HillChart {
-  id: string;
   name: string;
   points: Pt[];
 }
@@ -40,6 +34,7 @@ export interface Pt {
 export interface AppState {
   user: firebase.User | null; // the currently logged in user
   account: Account; // an object which stores the user's hillcharts against the user.uui
+  hills: HillChart[] // a client side copy of the hillcharts on this user's account
 }
 
 // -----------------------------------------------
@@ -63,7 +58,8 @@ const loggedOutAccount: Account = {
 class App extends Component<{}, {}> {
   state = {
     user: anonUser,
-    account: loggedOutAccount
+    account: loggedOutAccount,
+    hills: [],
   };
   componentDidMount() {
     //persist login accross refresh
@@ -80,26 +76,25 @@ class App extends Component<{}, {}> {
           if (snapshot.val()) {
             // there is a value, update the account infomation to the stored one.
             let val = snapshot.val();
-            this.setState({
-              account: {
-                uid: val.object.uid,
-                hillCharts: val.object.hillCharts
+            // TODO use this data to save state and dispalyt list of hills
+            if (val) {
+              //we have found existing data about that user and their hills
+              if (val.hills) {
+                console.log('hills for this user found!', val.hills)
+                //restructure the array and add in the id for each val 
+                let ids = Object.keys(val.hills)
+                let newObj = val.hills 
+                let newarr = ids.map(id => newObj[id] = {...newObj[id], id:id})
+                //update the client state with the new arr
+                this.setState({hills: newarr})
               }
-            });
+            }
           }
         });
       } else {
-      console.log('no user')
+        console.log("no user");
       }
     });
-  }
-
-  //remove an item from the db
-  removeItem(itemId: string) {
-    // find the id in the db and return a reference
-    const itemRef = firebase.database().ref(`/items/${itemId}`);
-    // delete using the reference
-    itemRef.remove();
   }
 
   logOut() {
@@ -125,32 +120,7 @@ class App extends Component<{}, {}> {
           const userRef = firebase
             .database()
             .ref(`/accounts/${this.state.user.uid}`)
-            .once("value")
-            .then(snapshot => {
-              // look at datasnapshot that came back
-              if (snapshot.val()) {
-                // there is an existing user account
-                console.log("user found in db ->", snapshot.val());
-                const data = snapshot.val();
-                console.log(data.object);
-                this.setState({
-                  account: { ...data.object }
-                });
-              } else {
-                // there is no user account
-                //create new account for this user
-                const account: Account = {
-                  uid: this.state.user.uid,
-                  hillCharts: []
-                };
-                //save the new account to the
-                let path = "accounts/" + this.state.user.uid;
-                this.setDBEntry(path, account);
-                this.setState({
-                  account
-                });
-              }
-            });
+          
         }
       );
     });
@@ -174,6 +144,19 @@ class App extends Component<{}, {}> {
     return val;
   };
 
+  createNewHillOnAccount = async (useruid: string) => {
+    const resultKey = await firebase
+      .database()
+      .ref(useruid)
+      .child("hills")
+      .push({
+        name: "My new hillchart",
+        points: []
+      }).key;
+
+    return resultKey;
+  };
+
   render() {
     return (
       <Router>
@@ -187,7 +170,16 @@ class App extends Component<{}, {}> {
 
           <MainPage>
             <Route path="/" exact component={Container} />
-            <Route path="/hills" exact component={HillChartBrowser} />
+            <Route
+              path="/hills"
+              exact
+              component={(props: any) => (
+                <HillChartBrowser
+                  {...props}
+                  currentUser={this.state.user}
+                />
+              )}
+            />
             <Route
               path="/hills/:id"
               component={(props: any) => (
@@ -197,6 +189,8 @@ class App extends Component<{}, {}> {
                   SetDBEntry={this.setDBEntry}
                   currentAccount={this.state.account}
                   currentUser={this.state.user}
+                  createNewHill={this.createNewHillOnAccount}
+                  currentUserHills={this.state.hills}
                 />
               )}
             />

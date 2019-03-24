@@ -8,8 +8,8 @@ import { adjectives, hillWords, generateRandom } from "../constants/words";
 import "../css/App.css";
 import { Pt } from "../constants/models";
 import { RouteComponentProps } from "react-router-dom";
-import { Account } from "./App";
 import { threadId } from "worker_threads";
+import firebase from "firebase";
 
 const ContainerWrapper = styled.div`
   margin: 0 auto;
@@ -109,31 +109,30 @@ interface ContainerState {
   draggedPoint: number;
   selectedPoint: number;
   inputFocused: boolean;
-  activeHillChart: string | null;
+  activeHill: string | null;
+  hillRef?: firebase.database.Reference;
 }
 
 /////---------------------------------------------------------
-
-
 
 interface MatchParams {
   id: any;
   isExact: boolean;
   params: {
-    id: string
-  }
+    id: string;
+  };
   url: string;
 }
 
 interface containerProps {
-  match ?: MatchParams // get the match param but not the rest of the route params
-  SetDBEntry : (path: string) => Promise<any>
-  currentAccount: Account
-  currentUser: firebase.User
+  match?: MatchParams; // get the match param but not the rest of the route params
+  SetDBEntry: (path: string) => Promise<any>;
+  currentAccount: Account;
+  currentUser: firebase.User;
+  hillID: Promise<string | null>;
 }
 
 /////---------------------------------------------------------
-
 
 class Container extends Component<containerProps, {}> {
   state: ContainerState = {
@@ -153,27 +152,26 @@ class Container extends Component<containerProps, {}> {
     draggedPoint: -1, //the point being dragged
     selectedPoint: -1, //the point which has been clicked
     inputFocused: false,
-    activeHillChart: null,
+    activeHill: null
   };
 
   pathRef = React.createRef<SVGPathElement>();
 
-
   handleLoad = (e: Event) => {
     if (this.state.mounted) {
       if (this.props.currentUser) {
-        console.log('user detected')
+        console.log("user detected");
       } else {
-        console.log("user is null")
+        console.log("user is null");
       }
       const ref = this.pathRef.current;
       if (!ref) {
         return;
       } else {
         this.getPointOnPath(ref, 0.5);
+      }
     }
-  }
-  }
+  };
   handleTouchStart = (e: any) => {
     let newId: number;
     if (e.target.id) {
@@ -204,51 +202,51 @@ class Container extends Component<containerProps, {}> {
       });
       return;
     }
-  }
+  };
   handleTouchMove = (e: any) => {
     const tx = e.changedTouches[0].pageX,
-    ty = e.changedTouches[0].pageY,
-    xPct = tx / window.innerWidth,
-    path = this.pathRef.current;
-  let point;
-  if (path) {
-    let tryPoint = path.getPointAtLength(xPct);
-    if (tryPoint !== undefined) {
-      point = tryPoint;
+      ty = e.changedTouches[0].pageY,
+      xPct = tx / window.innerWidth,
+      path = this.pathRef.current;
+    let point;
+    if (path) {
+      let tryPoint = path.getPointAtLength(xPct);
+      if (tryPoint !== undefined) {
+        point = tryPoint;
+      }
     }
-  }
-  //call pointOnCrv function
-  const pt = this.pointOnCrv(tx / window.innerWidth);
-  if (this.state.isDragging) {
-    if (this.state.selectedPoint !== -1) {
-      // create a new point and add it to the graph
-      let id = this.state.selectedPoint;
-      let pointsList: Pt[] = this.state.points;
-      pointsList[id].x = pt.x;
-      pointsList[id].y = pt.y;
+    //call pointOnCrv function
+    const pt = this.pointOnCrv(tx / window.innerWidth);
+    if (this.state.isDragging) {
+      if (this.state.selectedPoint !== -1) {
+        // create a new point and add it to the graph
+        let id = this.state.selectedPoint;
+        let pointsList: Pt[] = this.state.points;
+        pointsList[id].x = pt.x;
+        pointsList[id].y = pt.y;
 
-      this.setState({
-        points: pointsList
-      });
-      console.log(this.state.points);
+        this.setState({
+          points: pointsList
+        });
+        // console.log(this.state.points);
+      }
     }
-  }
 
-  this.setState({
-    mouse: { x: tx, y: ty },
-    mouseXPercent: tx / window.innerWidth,
-    mousePoseOnLine: {
-      x: pt.x,
-      y: pt.y
-    }
-  });
-  }
+    this.setState({
+      mouse: { x: tx, y: ty },
+      mouseXPercent: tx / window.innerWidth,
+      mousePoseOnLine: {
+        x: pt.x,
+        y: pt.y
+      }
+    });
+  };
 
   handleKeyDown = (e: KeyboardEvent) => {
     if (e.keyCode === 8 && this.state.selectedPoint !== -1) {
       this.handleDeletePoint();
     }
-  }
+  };
   handleMouseMove = (e: MouseEvent) => {
     const xPct = e.x / window.innerWidth,
       path = this.pathRef.current;
@@ -273,9 +271,16 @@ class Container extends Component<containerProps, {}> {
           {
             points: pointsList
           },
-          () =>
+          () => {
             // update the current positions in local sotrage
-            localStorage.setItem("points", JSON.stringify(this.state.points))
+            localStorage.setItem("points", JSON.stringify(this.state.points));
+            //update positions in db
+            if (this.state.hillRef) {
+              this.state.hillRef.child("points").set({
+                ...this.state.points
+              });
+            }
+          }
         );
       }
     }
@@ -288,29 +293,54 @@ class Container extends Component<containerProps, {}> {
         y: pt.y
       }
     });
-  }
+  };
 
   componentDidMount = () => {
-    this.state.mounted = true;  
-    //Check if we have loaded on a specific url 
+    this.state.mounted = true;
+    //Check if we have loaded on a specific url
     if (this.props.match) {
       if (this.props.match.params.id) {
-        //we have id to a new or exisitng hill 
-        console.log('hill id:',this.props.match.params.id)
-        this.setState({activeHillChart: this.props.match.params.id}, () => console.log(this.state)) 
+        //we have id to a new or exisitng hill
+        // console.log("hill id:", this.props.match.params.id);
+        this.setState({ activeHill: this.props.match.params.id });
+        // open up a db connection for this hill
+        let path =
+          "accounts/" +
+          this.props.currentUser.uid +
+          "/hills/" +
+          this.props.match.params.id;
+        let hillRef = firebase.database().ref(path);
+        this.setState({ hillRef }, () => {
+          //check value of hillRef
+          if (this.state.hillRef) {
+            //we have a vlaue hillRef, check its value
+            hillRef.once("value").then(snapshot => {
+              // check if we have existing data for this hill id
+              if (snapshot.val()) {
+                // console.log("existing data for this hill", snapshot.val());
+                let ed = snapshot.val();
+                if (this.state.mounted) {
+                  this.setState({ points: ed.points });
+                }
+              }
+            });
+          } else {
+            // no hill value, it is a new hill, add a name
+          }
+        });
       } else {
         //we dont have a specic hill id
-        console.log("sanbox")
-      };
-    } 
+        console.log("sanbox");
+      }
+    }
     //register handlers, make sure to cancel them in componentDidUnmount
     window.addEventListener("load", this.handleLoad);
     window.addEventListener("touchstart", this.handleTouchStart);
     window.addEventListener("mousemove", this.handleMouseMove);
     window.addEventListener("keydown", this.handleKeyDown);
     window.addEventListener("touchmove", this.handleTouchMove);
-  }
-  
+  };
+
   getPointOnPath = (ref: SVGPathElement, pct: number) => {
     const curveLen = ref.getTotalLength();
     const point = ref.getPointAtLength(curveLen * pct);
@@ -355,8 +385,14 @@ class Container extends Component<containerProps, {}> {
       () => {
         //fire stuff in a callback to make sure state is correct
         //prevent off by 1 erros
-        //TODO - Save state to local host.
+        //save tp local storage
         localStorage.setItem("points", JSON.stringify(this.state.points));
+        //save to db
+        if (this.state.hillRef) {
+          this.state.hillRef.child("points").set({
+            ...this.state.points
+          });
+        }
       }
     );
   };
@@ -421,17 +457,22 @@ class Container extends Component<containerProps, {}> {
   };
 
   handleTagChange = (e: React.FormEvent<HTMLInputElement>) => {
-    console.log("change->", e.currentTarget.value);
     if (this.state.selectedPoint > -1) {
       let ptList: Pt[] = this.state.points.slice();
       ptList[this.state.selectedPoint].tag = e.currentTarget.value;
-      console.log(ptList);
       this.setState(
         {
           points: ptList
         },
         () => {
+          //save to local storage
           localStorage.setItem("points", JSON.stringify(this.state.points));
+          //save to db
+          if (this.state.hillRef) {
+            this.state.hillRef.child("points").set({
+              ...this.state.points
+            });
+          }
         }
       );
     } else return;
@@ -464,18 +505,34 @@ class Container extends Component<containerProps, {}> {
       let pointList = this.state.points;
       let selectedPt = this.state.selectedPoint;
       pointList[selectedPt].color = c;
-      this.setState({ points: pointList });
+      this.setState({ points: pointList }, () => {
+        //save to local storage
+        localStorage.setItem("points", JSON.stringify(this.state.points));
+        //save to db
+        if (this.state.hillRef) {
+          this.state.hillRef.child("points").set({
+            ...this.state.points
+          });
+        }
+      });
     }
   };
 
   handleUpdateTagPosition = (newPos: number) => {
-    console.log("update pos to ->", newPos);
+    // console.log("update pos to ->", newPos);
     if (this.state.selectedPoint !== -1) {
       let pointList = this.state.points;
       let selectedPt = this.state.selectedPoint;
       pointList[selectedPt].tagPlacement = newPos;
       this.setState({ points: pointList }, () => {
+        //save to local storage
         localStorage.setItem("points", JSON.stringify(this.state.points));
+        //save to db
+        if (this.state.hillRef) {
+          this.state.hillRef.child("points").set({
+            ...this.state.points
+          });
+        }
       });
     }
   };
@@ -486,7 +543,14 @@ class Container extends Component<containerProps, {}> {
       let selectedPt = this.state.selectedPoint;
       pointList.splice(selectedPt, 1);
       this.setState({ points: pointList, selectedPoint: -1 }, () => {
+        //save to localstorage
         localStorage.setItem("points", JSON.stringify(this.state.points));
+        //save to db
+        if (this.state.hillRef) {
+          this.state.hillRef.child("points").set({
+            ...this.state.points
+          });
+        }
       });
     }
   };
@@ -496,14 +560,14 @@ class Container extends Component<containerProps, {}> {
   };
 
   componentWillUnmount = () => {
-    this.state.mounted = false;  
-    //unregister handlers 
+    this.state.mounted = false;
+    //unregister handlers
     window.removeEventListener("load", this.handleLoad);
     window.removeEventListener("touchstart", this.handleTouchStart);
     window.removeEventListener("mousemove", this.handleMouseMove);
     window.removeEventListener("keydown", this.handleKeyDown);
     window.removeEventListener("touchmove", this.handleTouchMove);
-  }
+  };
 
   render() {
     return (
