@@ -7,6 +7,7 @@ import firebase from "firebase";
 import { HillChart } from "../constants/models";
 import { threadId } from "worker_threads";
 import { hillWords } from "../constants/words";
+import { Tile } from "./Tile";
 
 const Container = styled.div`
   padding: 82px 33px;
@@ -58,28 +59,33 @@ class HillChartBrowser extends Component<
     var possible: string = "ABCDEFGHIKLMNOPQTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     for (var i = 0; i < length; i++)
       text += possible.charAt(Math.floor(Math.random() * possible.length));
-      console.log(text)
     return text;
   }
   componentDidMount = () => {
     this.state.mounted = true;
     let data: { hills: HillChart[] };
-    let newHillArr: HillChart[];
+    let newHillArr: HillChart[] = [];
     if (this.props.currentUser) {
       let userRef = firebase
         .database()
         .ref("accounts/" + this.props.currentUser.uid);
       userRef.once("value").then(snapshot => {
         if (snapshot.val()) {
-
           data = { ...snapshot.val() };
           let hillObj = data.hills;
           let keys = Object.keys(hillObj);
-          let newArr: any = []
-          keys.map((element:any) => { newArr.push(hillObj[element]) });
-          console.log("new hill arr =>", newArr)
+
+          let gen = keys.map((key:any, index: number) => {
+          let hill = {
+              id: key,
+              name: hillObj[key].name,
+              points: hillObj[key].points
+            }
+            newHillArr.push(hill)
+           });
+
           if (this.state.mounted) {
-            this.setState({ hills: newArr });
+            this.setState({ hills: newHillArr });
           }
         }
       });
@@ -95,7 +101,7 @@ class HillChartBrowser extends Component<
       <Container>
         <PageHeader>Hills</PageHeader>
         <HillChartGrid>
-          {this.state.hills.map((hill: HillChart, index: number) => <GridCell key={index}>{hill.name ? hill.name : "new hill"}</GridCell>)}
+          {this.state.hills.map((hill: HillChart, index: number) => <Tile key={index} hillId={1} index={index} hill={hill}/>)}
           <Link to={"/hills/" + this.makeid(16)}>
             <AddNewButtonGridCell>New</AddNewButtonGridCell>
           </Link>

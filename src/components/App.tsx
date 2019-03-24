@@ -81,10 +81,14 @@ class App extends Component<{}, {}> {
               //we have found existing data about that user and their hills
               if (val.hills) {
                 console.log('hills for this user found!', val.hills)
-                this.setState({hills: val.hills})
+                //restructure the array and add in the id for each val 
+                let ids = Object.keys(val.hills)
+                let newObj = val.hills 
+                let newarr = ids.map(id => newObj[id] = {...newObj[id], id:id})
+                //update the client state with the new arr
+                this.setState({hills: newarr})
               }
             }
-            console.log(val) 
           }
         });
       } else {

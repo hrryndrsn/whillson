@@ -228,7 +228,7 @@ class Container extends Component<containerProps, {}> {
         this.setState({
           points: pointsList
         });
-        console.log(this.state.points);
+        // console.log(this.state.points);
       }
     }
 
@@ -301,7 +301,7 @@ class Container extends Component<containerProps, {}> {
     if (this.props.match) {
       if (this.props.match.params.id) {
         //we have id to a new or exisitng hill
-        console.log("hill id:", this.props.match.params.id);
+        // console.log("hill id:", this.props.match.params.id);
         this.setState({ activeHill: this.props.match.params.id });
         // open up a db connection for this hill
         let path =
@@ -317,7 +317,7 @@ class Container extends Component<containerProps, {}> {
             hillRef.once("value").then(snapshot => {
               // check if we have existing data for this hill id
               if (snapshot.val()) {
-                console.log("existing data for this hill", snapshot.val());
+                // console.log("existing data for this hill", snapshot.val());
                 let ed = snapshot.val();
                 if (this.state.mounted) {
                   this.setState({ points: ed.points });
@@ -519,7 +519,7 @@ class Container extends Component<containerProps, {}> {
   };
 
   handleUpdateTagPosition = (newPos: number) => {
-    console.log("update pos to ->", newPos);
+    // console.log("update pos to ->", newPos);
     if (this.state.selectedPoint !== -1) {
       let pointList = this.state.points;
       let selectedPt = this.state.selectedPoint;
