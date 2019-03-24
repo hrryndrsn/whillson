@@ -127,7 +127,6 @@ interface MatchParams {
 interface containerProps {
   match?: MatchParams; // get the match param but not the rest of the route params
   SetDBEntry: (path: string) => Promise<any>;
-  createNewHill: (path: string) => Promise<any>;
   currentAccount: Account;
   currentUser: firebase.User;
   hillID: Promise<string | null>;

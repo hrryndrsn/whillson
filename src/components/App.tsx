@@ -163,6 +163,7 @@ class App extends Component<{}, {}> {
               component={(props: any) => (
                 <HillChartBrowser
                   {...props}
+                  currentUser={this.state.user}
                 />
               )}
             />
