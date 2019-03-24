@@ -90,6 +90,14 @@ const Annotation = styled.text`
   font-weight: bold;
   user-select: none;
 `;
+
+const HillnameInlineEdit = styled.input`
+  height: 24px;
+  margin-top: 60px;
+  position: absolute;
+  background : none;
+  font-size: 24px;
+`
 ////-----------------------------------------------------
 
 interface ContainerState {
@@ -111,6 +119,7 @@ interface ContainerState {
   inputFocused: boolean;
   activeHill: string | null;
   hillRef?: firebase.database.Reference;
+  hillName?: string;
 }
 
 /////---------------------------------------------------------
@@ -130,6 +139,7 @@ interface containerProps {
   currentAccount: Account;
   currentUser: firebase.User;
   hillID: Promise<string | null>;
+  hillName?: string;
 }
 
 /////---------------------------------------------------------
@@ -152,7 +162,7 @@ class Container extends Component<containerProps, {}> {
     draggedPoint: -1, //the point being dragged
     selectedPoint: -1, //the point which has been clicked
     inputFocused: false,
-    activeHill: null
+    activeHill: null,
   };
 
   pathRef = React.createRef<SVGPathElement>();
@@ -320,8 +330,11 @@ class Container extends Component<containerProps, {}> {
                 // console.log("existing data for this hill", snapshot.val());
                 let ed = snapshot.val();
                 if (this.state.mounted) {
-                  this.setState({ points: ed.points });
+                  this.setState({ hillName: ed.name, points: ed.points });
                 }
+              } else {
+                // we don't have an exist snapshot, this is a new point
+                this.setState({ hillName:"Hew hill"});
               }
             });
           } else {
@@ -569,12 +582,30 @@ class Container extends Component<containerProps, {}> {
     window.removeEventListener("touchmove", this.handleTouchMove);
   };
 
+  handleHillNameChange = (e: React.FormEvent<HTMLInputElement>) => {
+    this.setState({hillName: e.currentTarget.value}, () => {
+      if (this.state.hillRef) {
+        this.state.hillRef.child("points").set(this.state.points)
+      }    })
+  }
+
+  updateHillName = () => {
+   if (this.state.hillRef) {
+     this.state.hillRef.child("name").set(this.state.hillName)
+   }
+  }
+
   render() {
     return (
       <ContainerWrapper
         onMouseDown={this.handleMouseDown}
         onMouseUp={this.handleMouseUp}
       >
+      {
+        this.state.hillRef && (
+          <HillnameInlineEdit  value={this.state.hillName} onBlur={this.updateHillName} onChange={this.handleHillNameChange}/>
+        )
+      }
         <SvgWrapper
           width="100%"
           height="50%"

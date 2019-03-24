@@ -4,12 +4,13 @@ import { HillChart } from "../constants/models";
 import { Link } from "react-router-dom";
 
 const TileBase = styled.div`
-  background: #ccc;
+  background: white;
   height: 100px;
   padding: 24px;
   display: flex;
   align-items: flex-end;
   border-radius: 5px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16);
 `;
 
 interface TileProps {

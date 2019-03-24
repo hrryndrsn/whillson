@@ -31,10 +31,13 @@ const GridCell = styled.div`
 `;
 
 const AddNewButtonGridCell = styled.div`
-  height: 200px;
-  background: #f2f2f2;
-  border: 1px solid #ccc;
+    background: white;
+  height: 100px;
+  padding: 24px;
+  display: flex;
+  align-items: flex-end;
   border-radius: 5px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16);
 `;
 
 interface HillChartBrowserProps {
@@ -74,13 +77,12 @@ class HillChartBrowser extends Component<
           data = { ...snapshot.val() };
           let hillObj = data.hills;
           let keys = Object.keys(hillObj);
-
           let gen = keys.map((key:any, index: number) => {
-          let hill = {
-              id: key,
-              name: hillObj[key].name,
-              points: hillObj[key].points
-            }
+            let hill = {
+                id: key,
+                name: hillObj[key].name,
+                points: hillObj[key].points
+              }
             newHillArr.push(hill)
            });
 
@@ -103,7 +105,7 @@ class HillChartBrowser extends Component<
         <HillChartGrid>
           {this.state.hills.map((hill: HillChart, index: number) => <Tile key={index} hillId={1} index={index} hill={hill}/>)}
           <Link to={"/hills/" + this.makeid(16)}>
-            <AddNewButtonGridCell>New</AddNewButtonGridCell>
+            <AddNewButtonGridCell>Create hill</AddNewButtonGridCell>
           </Link>
         </HillChartGrid>
       </Container>
