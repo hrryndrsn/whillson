@@ -31,13 +31,14 @@ const GridCell = styled.div`
 `;
 
 const AddNewButtonGridCell = styled.div`
-    background: white;
-  height: 100px;
+background: white;
+height: 100px;
   padding: 24px;
   display: flex;
   align-items: flex-end;
   border-radius: 5px;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+  color: #999;
 `;
 
 interface HillChartBrowserProps {
@@ -105,7 +106,7 @@ class HillChartBrowser extends Component<
         <HillChartGrid>
           {this.state.hills.map((hill: HillChart, index: number) => <Tile key={index} hillId={1} index={index} hill={hill}/>)}
           <Link to={"/hills/" + this.makeid(16)}>
-            <AddNewButtonGridCell>Create hill</AddNewButtonGridCell>
+            <AddNewButtonGridCell>+ Add hill</AddNewButtonGridCell>
           </Link>
         </HillChartGrid>
       </Container>
