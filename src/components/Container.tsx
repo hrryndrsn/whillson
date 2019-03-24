@@ -91,12 +91,23 @@ const Annotation = styled.text`
   user-select: none;
 `;
 
-const HillnameInlineEdit = styled.input`
+const HillNameInlineEdit = styled.input`
   height: 24px;
   margin-top: 60px;
   position: absolute;
   background : none;
+  padding: 10px;
+  margin-left: 10px;
   font-size: 24px;
+  width: 40vw;
+  outline: 0;
+  border-radius: 5px;
+  border: 1px solid rgba(0,0,0,0);
+  &:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid #ccc;
+  }
 `
 ////-----------------------------------------------------
 
@@ -583,8 +594,8 @@ class Container extends Component<containerProps, {}> {
   handleHillNameChange = (e: React.FormEvent<HTMLInputElement>) => {
     this.setState({hillName: e.currentTarget.value}, () => {
       if (this.state.hillRef) {
-        this.state.hillRef.child("points").set(this.state.points)
-      }    })
+        this.state.hillRef.child("name").set(this.state.hillName)
+      }})
   }
 
   updateHillName = () => {
@@ -601,7 +612,7 @@ class Container extends Component<containerProps, {}> {
       >
       {
         this.state.hillRef && (
-          <HillnameInlineEdit type="text" value={this.state.hillName}  onChange={this.handleHillNameChange}/>
+          <HillNameInlineEdit type="text" value={this.state.hillName}  onChange={this.handleHillNameChange}/>
         )
       }
         <SvgWrapper

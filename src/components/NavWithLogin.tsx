@@ -3,6 +3,7 @@ import styled from "styled-components";
 
 import "../css/App.css";
 import { Link, NavLink } from "react-router-dom";
+import { logoutSVGPath1, logoutSVGPath2 } from "../constants/colors";
 
 const NavWrapper = styled.div`
   margin: 0 auto;
@@ -38,7 +39,7 @@ const AccountControlGroup = styled.div`
   a {
     justify-self: right;
     align-self: center;
-    color: #000;
+    color: #999 ;
     font-size: none;
   }
 `;
@@ -65,11 +66,19 @@ const ProfilePhoto = styled.img`
   align-self: center;
 `;
 
+const LogoutButtonGroup = styled.div`
+  display: flex;
+  &:hover {
+    fill: pink;
+  }
+`
+
 const LogInOutButton = styled.button`
   background: none;
   box-shadow: none; 
-  width: 100%;
   color: black;
+  border: none;
+  cursor: pointer;
   &:hover {
     color: limegreen;
   }
@@ -85,6 +94,7 @@ const Username = styled.p`
 const SiteTitle = styled.p`
   color: #bbb;
   font-weight: bolder;
+  font-size: 24px;
   margin-left: 14px;
   text-decoration: none;
   vertical-align: center;
@@ -99,12 +109,25 @@ interface NavProps {
   logIn: () => void;
 }
 
+const LogoutSVG = styled.svg`
+  fill: #999;
+  height: 100%;
+  transform: scale(1.4);
+  margin-left: 8px;
+`
+
+const renderlogoutSVG = <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+
+</svg>
+
+
+
 class NavWithLogin extends Component<NavProps, {}> {
   render() {
     return (
       <NavWrapper>
-        <NavLink to="/">
-          <SiteTitle>Move Mountains</SiteTitle>
+        <NavLink to={this.props.user.uid == "123" ? "/hills" : "/"}>
+          <SiteTitle>👉⛰</SiteTitle>
         </NavLink>
         {this.props.isLoggedIn ? (
           <AccountControlGroup>
@@ -118,11 +141,14 @@ class NavWithLogin extends Component<NavProps, {}> {
             <LoggedInUserControlGroup>
               <UserProfile>
                 <ProfilePhoto src={this.props.user.photoURL} />
-                <div>
+                <LogoutButtonGroup>
                   <LogInOutButton onClick={this.props.logOut.bind(this)}>
-                    Log out
+                    <LogoutSVG width="24" height="24" viewBox="0 0 24 24" >
+                    <path d={logoutSVGPath1}/>
+                    <path d={logoutSVGPath2}/>
+                    </LogoutSVG>
                   </LogInOutButton>
-                </div>
+                </LogoutButtonGroup>
               </UserProfile>
             </LoggedInUserControlGroup>
           </AccountControlGroup>
