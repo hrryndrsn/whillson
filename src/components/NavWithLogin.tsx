@@ -22,7 +22,7 @@ const NavWrapper = styled.div`
       color: pink;
     }
   }
-  h2 {
+  h3 {
     align-self: center;
     font-weight: bold;
     margin-left: 24px;
@@ -82,8 +82,10 @@ const Username = styled.p`
   margin: 0;
 `;
 
-const SiteTitle = styled.h2`
+const SiteTitle = styled.p`
   color: #bbb;
+  font-weight: bolder;
+  margin-left: 14px;
   text-decoration: none;
   vertical-align: center;
   align-self: center;

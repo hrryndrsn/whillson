@@ -163,6 +163,7 @@ class Container extends Component<containerProps, {}> {
     selectedPoint: -1, //the point which has been clicked
     inputFocused: false,
     activeHill: null,
+    hillName: '',
   };
 
   pathRef = React.createRef<SVGPathElement>();
@@ -330,11 +331,8 @@ class Container extends Component<containerProps, {}> {
                 // console.log("existing data for this hill", snapshot.val());
                 let ed = snapshot.val();
                 if (this.state.mounted) {
-                  this.setState({ hillName: ed.name, points: ed.points });
+                  this.setState({ hillName: ed.name || "Hew hill", points: ed.points });
                 }
-              } else {
-                // we don't have an exist snapshot, this is a new point
-                this.setState({ hillName:"Hew hill"});
               }
             });
           } else {
@@ -603,7 +601,7 @@ class Container extends Component<containerProps, {}> {
       >
       {
         this.state.hillRef && (
-          <HillnameInlineEdit  value={this.state.hillName} onBlur={this.updateHillName} onChange={this.handleHillNameChange}/>
+          <HillnameInlineEdit type="text" value={this.state.hillName}  onChange={this.handleHillNameChange}/>
         )
       }
         <SvgWrapper
