@@ -11,6 +11,12 @@ const TileBase = styled.div`
   align-items: flex-end;
   border-radius: 5px;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+  h3 {
+    color: black;
+  }
+  a {
+    text-decoration: none;
+  }
 `;
 
 interface TileProps {
