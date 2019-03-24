@@ -60,16 +60,6 @@ class HillChartBrowser extends Component<
       text += possible.charAt(Math.floor(Math.random() * possible.length));
       console.log(text)
     return text;
-    // let newHillKey = firebase
-    //   .database()
-    //   .ref("accounts/" + this.props.currentUser.uid + "/")
-    //   .child("hills")
-    //   .push({ name: "new hill" }).key;
-    // if (newHillKey) {
-    //   return newHillKey;
-    // } else {
-    //   return "";
-    // }
   }
   componentDidMount = () => {
     this.state.mounted = true;

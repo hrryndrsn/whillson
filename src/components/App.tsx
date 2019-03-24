@@ -34,6 +34,7 @@ export interface Pt {
 export interface AppState {
   user: firebase.User | null; // the currently logged in user
   account: Account; // an object which stores the user's hillcharts against the user.uui
+  hills: HillChart[] // a client side copy of the hillcharts on this user's account
 }
 
 // -----------------------------------------------
@@ -57,7 +58,8 @@ const loggedOutAccount: Account = {
 class App extends Component<{}, {}> {
   state = {
     user: anonUser,
-    account: loggedOutAccount
+    account: loggedOutAccount,
+    hills: [],
   };
   componentDidMount() {
     //persist login accross refresh
@@ -75,6 +77,13 @@ class App extends Component<{}, {}> {
             // there is a value, update the account infomation to the stored one.
             let val = snapshot.val();
             // TODO use this data to save state and dispalyt list of hills
+            if (val) {
+              //we have found existing data about that user and their hills
+              if (val.hills) {
+                console.log('hills for this user found!', val.hills)
+                this.setState({hills: val.hills})
+              }
+            }
             console.log(val) 
           }
         });
@@ -177,6 +186,7 @@ class App extends Component<{}, {}> {
                   currentAccount={this.state.account}
                   currentUser={this.state.user}
                   createNewHill={this.createNewHillOnAccount}
+                  currentUserHills={this.state.hills}
                 />
               )}
             />

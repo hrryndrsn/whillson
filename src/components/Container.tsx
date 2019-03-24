@@ -310,16 +310,24 @@ class Container extends Component<containerProps, {}> {
           "/hills/" +
           this.props.match.params.id;
         let hillRef = firebase.database().ref(path);
-        this.setState({ hillRef });
-        //check value of hillRef
-        if (this.state.hillRef) {
-          //we have a vlaue hillRef, check its value
-          this.state.hillRef.once("value").then(snapshot => {
-            console.log("datasnapshot of the hill", snapshot);
-          });
-        } else {
-          // no hill value, it is a new hill, add a name
-        }
+        this.setState({ hillRef }, () => {
+          //check value of hillRef
+          if (this.state.hillRef) {
+            //we have a vlaue hillRef, check its value
+            hillRef.once("value").then(snapshot => {
+              // check if we have existing data for this hill id
+              if (snapshot.val()) {
+                console.log("existing data for this hill", snapshot.val());
+                let ed = snapshot.val();
+                if (this.state.mounted) {
+                  this.setState({ points: ed.points });
+                }
+              }
+            });
+          } else {
+            // no hill value, it is a new hill, add a name
+          }
+        });
       } else {
         //we dont have a specic hill id
         console.log("sanbox");
