@@ -74,12 +74,8 @@ class App extends Component<{}, {}> {
           if (snapshot.val()) {
             // there is a value, update the account infomation to the stored one.
             let val = snapshot.val();
-            this.setState({
-              account: {
-                uid: val.object.uid,
-                hillCharts: val.object.hillCharts
-              }
-            });
+            // TODO use this data to save state and dispalyt list of hills
+            console.log(val) 
           }
         });
       } else {
