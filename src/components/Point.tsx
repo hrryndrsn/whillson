@@ -21,7 +21,7 @@ const Circle = styled.circle`
     }
   }
 `;
-
+//zord
 const Tag = styled.text`
   fill: #000;
   user-select: none;
