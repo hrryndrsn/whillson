@@ -95,20 +95,20 @@ const HillNameInlineEdit = styled.input`
   height: 24px;
   margin-top: 60px;
   position: absolute;
-  background : none;
+  background: none;
   padding: 10px;
   margin-left: 10px;
   font-size: 24px;
   width: 40vw;
   outline: 0;
   border-radius: 5px;
-  border: 1px solid rgba(0,0,0,0);
+  border: 1px solid rgba(0, 0, 0, 0);
   &:focus {
     outline: none;
     background: rgba(255, 255, 255, 0.5);
     border: 1px solid #ccc;
   }
-`
+`;
 ////-----------------------------------------------------
 
 interface ContainerState {
@@ -174,7 +174,7 @@ class Container extends Component<containerProps, {}> {
     selectedPoint: -1, //the point which has been clicked
     inputFocused: false,
     activeHill: null,
-    hillName: '',
+    hillName: ""
   };
 
   pathRef = React.createRef<SVGPathElement>();
@@ -342,7 +342,10 @@ class Container extends Component<containerProps, {}> {
                 // console.log("existing data for this hill", snapshot.val());
                 let ed = snapshot.val();
                 if (this.state.mounted) {
-                  this.setState({ hillName: ed.name || "Hew hill", points: ed.points });
+                  this.setState({
+                    hillName: ed.name || "Hew hill",
+                    points: ed.points
+                  });
                 }
               }
             });
@@ -502,11 +505,8 @@ class Container extends Component<containerProps, {}> {
 
   renderPointEditor = () => {
     if (this.state.selectedPoint === -1) {
-      return (
-        <EmptyFloatingBox>
-          <EmptyMessage />
-        </EmptyFloatingBox>
-      );
+      // nothing selected
+      return <div />;
     } else {
       return (
         <FloatingBox
@@ -592,17 +592,18 @@ class Container extends Component<containerProps, {}> {
   };
 
   handleHillNameChange = (e: React.FormEvent<HTMLInputElement>) => {
-    this.setState({hillName: e.currentTarget.value}, () => {
+    this.setState({ hillName: e.currentTarget.value }, () => {
       if (this.state.hillRef) {
-        this.state.hillRef.child("name").set(this.state.hillName)
-      }})
-  }
+        this.state.hillRef.child("name").set(this.state.hillName);
+      }
+    });
+  };
 
   updateHillName = () => {
-   if (this.state.hillRef) {
-     this.state.hillRef.child("name").set(this.state.hillName)
-   }
-  }
+    if (this.state.hillRef) {
+      this.state.hillRef.child("name").set(this.state.hillName);
+    }
+  };
 
   render() {
     return (
@@ -610,11 +611,13 @@ class Container extends Component<containerProps, {}> {
         onMouseDown={this.handleMouseDown}
         onMouseUp={this.handleMouseUp}
       >
-      {
-        this.state.hillRef && (
-          <HillNameInlineEdit type="text" value={this.state.hillName}  onChange={this.handleHillNameChange}/>
-        )
-      }
+        {this.state.hillRef && (
+          <HillNameInlineEdit
+            type="text"
+            value={this.state.hillName}
+            onChange={this.handleHillNameChange}
+          />
+        )}
         <SvgWrapper
           width="100%"
           height="50%"

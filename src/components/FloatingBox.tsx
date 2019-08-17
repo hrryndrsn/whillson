@@ -5,13 +5,11 @@ import TagPositionMenu from "./ TagPositionMenu";
 
 const FloatingBoxWrapper = styled.div`
   display: grid;
-  height: 35vh;
   width: 50%;
   position: absolute;
   left: 0;
   right: 0;
-  top: 75vh;
-  height: 75vh;
+  top: 70vh;
   background: none;
   margin: 0 auto;
   font-size: 32px;
@@ -34,7 +32,6 @@ const FloatingBoxWrapper = styled.div`
     width: 60%;
     transform: scale(0.9);
   }
-
 `;
 
 const FormWrapper = styled.form`
@@ -67,6 +64,9 @@ const ControlRow = styled.div`
 `;
 
 const FormFieldGroup = styled.div``;
+const FormFieldGroupLeft = styled.div`
+  flex-grow: 2;
+`;
 
 const DeleteButton = styled.div`
   width: 66px;
@@ -139,7 +139,7 @@ export default class FloatingBox extends React.Component<
         <FormWrapper id="cformWrapper" onSubmit={this.handleSubmit}>
           {/* Row 1 */}
           <ControlRow id="cControlRow1">
-            <FormFieldGroup id="c">
+            <FormFieldGroupLeft id="c">
               <TagLabel>Name</TagLabel>
               <PointTagInput
                 type="text"
@@ -151,7 +151,7 @@ export default class FloatingBox extends React.Component<
                 onBlur={this.props.toggleInputFocus}
                 autoComplete={"off"}
               />
-            </FormFieldGroup>
+            </FormFieldGroupLeft>
             <FormFieldGroup id="c">
               <DeleteButton
                 id="cDeleteButton"
