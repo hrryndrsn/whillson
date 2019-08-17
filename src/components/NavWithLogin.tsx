@@ -8,7 +8,7 @@ import { logoutSVGPath1, logoutSVGPath2 } from "../constants/colors";
 const NavWrapper = styled.div`
   margin: 0 auto;
   padding: 16px 8px;
-  width: 100%;
+  width: 90%;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -39,7 +39,7 @@ const AccountControlGroup = styled.div`
   a {
     justify-self: right;
     align-self: center;
-    color: #999 ;
+    color: #999;
     font-size: none;
   }
 `;
@@ -71,11 +71,11 @@ const LogoutButtonGroup = styled.div`
   &:hover {
     fill: pink;
   }
-`
+`;
 
 const LogInOutButton = styled.button`
   background: none;
-  box-shadow: none; 
+  box-shadow: none;
   color: black;
   border: none;
   cursor: pointer;
@@ -114,20 +114,18 @@ const LogoutSVG = styled.svg`
   height: 100%;
   transform: scale(1.4);
   margin-left: 8px;
-`
+`;
 
-const renderlogoutSVG = <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-
-</svg>
-
-
+const renderlogoutSVG = (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" />
+);
 
 class NavWithLogin extends Component<NavProps, {}> {
   render() {
     return (
       <NavWrapper>
         <NavLink to={this.props.user.uid == "123" ? "/hills" : "/"}>
-          <SiteTitle>👉⛰</SiteTitle>
+          <SiteTitle>Move mountains</SiteTitle>
         </NavLink>
         {this.props.isLoggedIn ? (
           <AccountControlGroup>
@@ -143,9 +141,9 @@ class NavWithLogin extends Component<NavProps, {}> {
                 <ProfilePhoto src={this.props.user.photoURL} />
                 <LogoutButtonGroup>
                   <LogInOutButton onClick={this.props.logOut.bind(this)}>
-                    <LogoutSVG width="24" height="24" viewBox="0 0 24 24" >
-                    <path d={logoutSVGPath1}/>
-                    <path d={logoutSVGPath2}/>
+                    <LogoutSVG width="24" height="24" viewBox="0 0 24 24">
+                      <path d={logoutSVGPath1} />
+                      <path d={logoutSVGPath2} />
                     </LogoutSVG>
                   </LogInOutButton>
                 </LogoutButtonGroup>
