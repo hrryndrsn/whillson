@@ -7,8 +7,8 @@ import { logoutSVGPath1, logoutSVGPath2 } from "../constants/colors";
 
 const NavWrapper = styled.div`
   margin: 0 auto;
-  padding: 16px 8px;
-  width: 90%;
+  padding: 24px 8px;
+  width: 95%;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -20,7 +20,7 @@ const NavWrapper = styled.div`
   a {
     text-decoration: none;
     &:hover {
-      color: pink;
+      color: limegreen;
     }
   }
   h3 {
@@ -31,20 +31,23 @@ const NavWrapper = styled.div`
 `;
 const AccountControlGroup = styled.div`
   display: grid;
+  color: #333;
   gap: 24px;
   grid-template-columns: 1fr 1fr;
   button {
     padding: 0;
   }
   a {
+    font-size: 16px;
     justify-self: right;
     align-self: center;
-    color: #999;
-    font-size: none;
+    color: #333;
+    font-weight: bold;
   }
 `;
 
 const LoggedInUserControlGroup = styled.div`
+  width: 50px;
   display: grid;
   grid-template-areas: "a b";
   align-content: center;
@@ -69,15 +72,18 @@ const ProfilePhoto = styled.img`
 const LogoutButtonGroup = styled.div`
   display: flex;
   &:hover {
-    fill: pink;
+    fill: limegreen;
   }
 `;
 
 const LogInOutButton = styled.button`
+  font-size: 16px;
+  padding: 8px;
   background: none;
   box-shadow: none;
-  color: black;
+  font-weight: 600;
   border: none;
+  color: #333;
   cursor: pointer;
   &:hover {
     color: limegreen;
@@ -92,14 +98,17 @@ const Username = styled.p`
 `;
 
 const SiteTitle = styled.p`
-  color: #bbb;
+  color: #333;
+  font-size: 16px;
   font-weight: bolder;
-  font-size: 24px;
   margin-left: 14px;
   text-decoration: none;
   vertical-align: center;
   align-self: center;
   justify-self: center;
+  &:hover {
+    color: limegreen;
+  }
 `;
 
 interface NavProps {
@@ -110,10 +119,13 @@ interface NavProps {
 }
 
 const LogoutSVG = styled.svg`
-  fill: #999;
+  fill: #666;
   height: 100%;
   transform: scale(1.4);
   margin-left: 8px;
+  &:hover {
+    fill: limegreen;
+  }
 `;
 
 const renderlogoutSVG = (
@@ -124,15 +136,13 @@ class NavWithLogin extends Component<NavProps, {}> {
   render() {
     return (
       <NavWrapper>
-        <NavLink to={this.props.user.uid == "123" ? "/hills" : "/"}>
-          <SiteTitle>Move mountains</SiteTitle>
+        <NavLink to={"/"}>
+          <SiteTitle>Move Mountains</SiteTitle>
         </NavLink>
         {this.props.isLoggedIn ? (
-          <AccountControlGroup>
-            <LogInOutButton onClick={this.props.logIn.bind(this)}>
-              Log in
-            </LogInOutButton>
-          </AccountControlGroup>
+          <LogInOutButton onClick={this.props.logIn.bind(this)}>
+            Log in
+          </LogInOutButton>
         ) : (
           <AccountControlGroup>
             <NavLink to={"/hills"}>Browse hills</NavLink>
